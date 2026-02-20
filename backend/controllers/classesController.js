@@ -244,7 +244,12 @@ const getTodaySessions = async (req, res) => {
                 else if (currentMinutes >= endMin) computed_status = 'completed';
             }
 
-            return { ...s, computed_status };
+            return {
+                ...s,
+                computed_status,
+                student_present: Number(s.student_present || 0),
+                present_count: Number(s.present_count || 0)
+            };
         });
 
         res.json({ sessions: enriched });

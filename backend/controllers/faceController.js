@@ -139,17 +139,21 @@ const verifyFace = async (req, res) => {
             return res.status(400).json({ error: 'Face not registered. Please register your face first.' });
         }
 
-        let bestScore = 0;
+        let bestDistance = Infinity;
 
         for (const row of storedEmbeddings) {
             const stored = typeof row.embedding === 'string' ? JSON.parse(row.embedding) : row.embedding;
             const distance = euclideanDistance(descriptor, stored);
-            const score = Math.max(0, 1 - distance / 2);
-            if (score > bestScore) bestScore = score;
+            if (distance < bestDistance) bestDistance = distance;
         }
 
-        const matchThreshold = 0.75; // Stricter threshold to avoid accepting any face
-        const matched = bestScore >= matchThreshold;
+        // face-api.js euclidean distance:
+        // < 0.40 : Very strict match (same person)
+        // 0.40 - 0.50 : Normal match
+        // > 0.50 : Different person
+        const matchThreshold = 0.45;
+        const matched = bestDistance <= matchThreshold;
+        const bestScore = Math.max(0, 1 - bestDistance);
 
         await pool.query(
             `INSERT INTO face_scan_logs (user_id, session_id, match_score, liveness_passed, result, ip_address, device_info, scan_photo)
