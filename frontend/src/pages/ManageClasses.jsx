@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
+import TypeToConfirmModal from '../components/TypeToConfirmModal';
 
 const IconPlus = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -30,6 +31,15 @@ const ManageClasses = () => {
     const [classStudents, setClassStudents] = useState([]);
     const [enrollSearch, setEnrollSearch] = useState('');
     const [enrollResults, setEnrollResults] = useState([]);
+
+    const [deleteModal, setDeleteModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        confirmText: 'Delete',
+        expectedText: 'DELETE',
+        onConfirm: () => { }
+    });
 
     useEffect(() => {
         fetchAll();
@@ -124,6 +134,118 @@ const ManageClasses = () => {
         }
     };
 
+    const handleDeleteClass = (id) => {
+        setDeleteModal({
+            isOpen: true,
+            title: 'Delete Class',
+            message: 'Are you sure you want to delete this class? This will also remove all class sessions and attendances.',
+            confirmText: 'Delete Class',
+            expectedText: 'DELETE',
+            onConfirm: async () => {
+                setDeleteModal(prev => ({ ...prev, isOpen: false }));
+                try {
+                    await api.delete(`/classes/${id}`);
+                    toast.success('Class deleted successfully');
+                    fetchAll();
+                    if (selectedClass?.id === id) setSelectedClass(null);
+                } catch { toast.error('Failed to delete class'); }
+            }
+        });
+    };
+
+    const handleClearClasses = () => {
+        setDeleteModal({
+            isOpen: true,
+            title: 'Clear All Classes',
+            message: 'Are you sure you want to delete ALL classes? This action is irreversible.',
+            confirmText: 'Clear Classes',
+            expectedText: 'CLEAR ALL',
+            onConfirm: async () => {
+                setDeleteModal(prev => ({ ...prev, isOpen: false }));
+                try {
+                    await api.delete('/classes');
+                    toast.success('All classes cleared');
+                    fetchAll();
+                    setSelectedClass(null);
+                } catch { toast.error('Failed to clear classes'); }
+            }
+        });
+    };
+
+    const handleDeleteCourse = (id) => {
+        setDeleteModal({
+            isOpen: true,
+            title: 'Delete Course',
+            message: 'Are you sure you want to delete this course? This will also remove all classes associated with it.',
+            confirmText: 'Delete Course',
+            expectedText: 'DELETE',
+            onConfirm: async () => {
+                setDeleteModal(prev => ({ ...prev, isOpen: false }));
+                try {
+                    await api.delete(`/classes/courses/${id}`);
+                    toast.success('Course deleted successfully');
+                    fetchAll();
+                } catch { toast.error('Failed to delete course'); }
+            }
+        });
+    };
+
+    const handleClearCourses = () => {
+        setDeleteModal({
+            isOpen: true,
+            title: 'Clear All Courses',
+            message: 'Are you sure you want to delete ALL courses? This action is irreversible.',
+            confirmText: 'Clear Courses',
+            expectedText: 'CLEAR ALL',
+            onConfirm: async () => {
+                setDeleteModal(prev => ({ ...prev, isOpen: false }));
+                try {
+                    await api.delete('/classes/courses');
+                    toast.success('All courses cleared');
+                    fetchAll();
+                } catch { toast.error('Failed to clear courses'); }
+            }
+        });
+    };
+
+    const handleRemoveStudent = (studentId) => {
+        if (!selectedClass) return;
+        setDeleteModal({
+            isOpen: true,
+            title: 'Remove Student',
+            message: 'Are you sure you want to remove this student from the class?',
+            confirmText: 'Remove Student',
+            expectedText: 'REMOVE',
+            onConfirm: async () => {
+                setDeleteModal(prev => ({ ...prev, isOpen: false }));
+                try {
+                    await api.delete(`/classes/${selectedClass.id}/students/${studentId}`);
+                    toast.success('Student removed successfully');
+                    fetchClassStudents(selectedClass.id);
+                } catch { toast.error('Failed to remove student'); }
+            }
+        });
+    };
+
+    const handleClearStudents = () => {
+        if (!selectedClass) return;
+        setDeleteModal({
+            isOpen: true,
+            title: 'Clear All Students',
+            message: 'Are you sure you want to remove ALL enrolled students from this class?',
+            confirmText: 'Clear Students',
+            expectedText: 'CLEAR ALL',
+            onConfirm: async () => {
+                setDeleteModal(prev => ({ ...prev, isOpen: false }));
+                try {
+                    await api.delete(`/classes/${selectedClass.id}/students`);
+                    toast.success('All students removed');
+                    fetchClassStudents(selectedClass.id);
+                } catch { toast.error('Failed to clear students'); }
+            }
+        });
+    };
+
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     if (loading) {
@@ -162,9 +284,16 @@ const ManageClasses = () => {
                     <>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                             <div className="chart-title">All Classes ({classes.length})</div>
-                            <button className="btn btn-primary" onClick={() => setShowForm(!showForm)} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <IconPlus /> Add Class
-                            </button>
+                            <div style={{ display: 'flex', gap: 8 }}>
+                                {classes.length > 0 && (
+                                    <button className="btn" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }} onClick={handleClearClasses}>
+                                        Clear All
+                                    </button>
+                                )}
+                                <button className="btn btn-primary" onClick={() => setShowForm(!showForm)} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                    <IconPlus /> Add Class
+                                </button>
+                            </div>
                         </div>
 
                         {showForm && (
@@ -226,6 +355,7 @@ const ManageClasses = () => {
                                         <th>Time</th>
                                         <th>Room</th>
                                         <th>Section</th>
+                                        <th style={{ width: 40, textAlign: 'center' }}></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -240,6 +370,11 @@ const ManageClasses = () => {
                                             <td>{c.start_time} – {c.end_time}</td>
                                             <td>{c.room_no || '—'}</td>
                                             <td><span className="badge badge-faculty">{c.section || 'A'}</span></td>
+                                            <td style={{ textAlign: 'center' }}>
+                                                <button onClick={() => handleDeleteClass(c.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', opacity: 0.7 }}>
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                                </button>
+                                            </td>
                                         </tr>
                                     ))}
                                     {classes.length === 0 && (
@@ -255,9 +390,16 @@ const ManageClasses = () => {
                     <>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                             <div className="chart-title">All Courses ({courses.length})</div>
-                            <button className="btn btn-primary" onClick={() => setShowForm(!showForm)} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <IconPlus /> Add Course
-                            </button>
+                            <div style={{ display: 'flex', gap: 8 }}>
+                                {courses.length > 0 && (
+                                    <button className="btn" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }} onClick={handleClearCourses}>
+                                        Clear All
+                                    </button>
+                                )}
+                                <button className="btn btn-primary" onClick={() => setShowForm(!showForm)} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                    <IconPlus /> Add Course
+                                </button>
+                            </div>
                         </div>
 
                         {showForm && (
@@ -301,6 +443,7 @@ const ManageClasses = () => {
                                         <th>Department</th>
                                         <th>Semester</th>
                                         <th>Credits</th>
+                                        <th style={{ width: 40, textAlign: 'center' }}></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -311,6 +454,11 @@ const ManageClasses = () => {
                                             <td>{c.department_name}</td>
                                             <td>{c.semester || '—'}</td>
                                             <td>{c.credits}</td>
+                                            <td style={{ textAlign: 'center' }}>
+                                                <button onClick={() => handleDeleteCourse(c.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', opacity: 0.7 }}>
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                                </button>
+                                            </td>
                                         </tr>
                                     ))}
                                     {courses.length === 0 && (
@@ -386,12 +534,24 @@ const ManageClasses = () => {
                                             </div>
                                         )}
 
-                                        <div style={{ fontWeight: 600, marginBottom: 8, fontSize: 13 }}>Enrolled ({classStudents.length})</div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                                            <div style={{ fontWeight: 600, fontSize: 13 }}>Enrolled ({classStudents.length})</div>
+                                            {classStudents.length > 0 && (
+                                                <button onClick={handleClearStudents} style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: 12, cursor: 'pointer', opacity: 0.8 }}>
+                                                    Remove All
+                                                </button>
+                                            )}
+                                        </div>
                                         <div style={{ maxHeight: 200, overflowY: 'auto' }}>
                                             {classStudents.map(s => (
-                                                <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--border-color)', fontSize: 13 }}>
-                                                    <span>{s.name}</span>
-                                                    <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>{s.enrollment_no || s.email}</span>
+                                                <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid var(--border-color)', fontSize: 13 }}>
+                                                    <div>
+                                                        <span>{s.name}</span>
+                                                        <span style={{ color: 'var(--text-muted)', fontSize: 12, marginLeft: 8 }}>{s.enrollment_no || s.email}</span>
+                                                    </div>
+                                                    <button onClick={() => handleRemoveStudent(s.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', opacity: 0.7 }}>
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                                                    </button>
                                                 </div>
                                             ))}
                                             {classStudents.length === 0 && <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>No students enrolled yet.</p>}
@@ -408,6 +568,11 @@ const ManageClasses = () => {
                     </>
                 )}
             </div>
+
+            <TypeToConfirmModal
+                {...deleteModal}
+                onCancel={() => setDeleteModal(prev => ({ ...prev, isOpen: false }))}
+            />
         </>
     );
 };
