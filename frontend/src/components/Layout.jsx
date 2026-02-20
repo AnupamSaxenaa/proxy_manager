@@ -193,7 +193,6 @@ const Layout = () => {
             { to: '/dashboard/manage-classes', icon: <IconBook />, label: 'Classes & Courses' },
             { to: '/dashboard/analytics', icon: <IconChart />, label: 'Analytics' },
             { to: '/dashboard/at-risk', icon: <IconWarning />, label: 'At-Risk Students' },
-            { to: '/dashboard/reports', icon: <IconReport />, label: 'Reports' },
         ];
     };
 
