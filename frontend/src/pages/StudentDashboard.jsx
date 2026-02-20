@@ -120,7 +120,7 @@ const StudentDashboard = () => {
                         <div>
                             <div className="stat-value">{overall.percentage || 0}%</div>
                             <div className="stat-label">Overall Attendance</div>
-                            <div className="progress-bar" style={{ marginTop: 8, width: 120 }}>
+                            <div className="progress-bar" style={{ marginTop: 8, width: '100%', maxWidth: 120 }}>
                                 <div
                                     className={`progress-fill ${getPercentageColor(overall.percentage)}`}
                                     style={{ width: `${overall.percentage || 0}%` }}
@@ -192,10 +192,10 @@ const StudentDashboard = () => {
                                             </span>
                                         </div>
 
-                                        <div style={{ fontSize: 13, color: 'var(--text-muted)', display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+                                        <div style={{ fontSize: 13, color: 'var(--text-muted)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px 12px' }}>
                                             <span>{s.start_time} – {s.end_time}</span>
                                             <span>Room {s.room_no || 'TBA'}</span>
-                                            <span>{s.faculty_name}</span>
+                                            <span style={{ gridColumn: '1 / -1' }}>{s.faculty_name}</span>
                                         </div>
 
                                         {s.computed_status === 'ongoing' && (

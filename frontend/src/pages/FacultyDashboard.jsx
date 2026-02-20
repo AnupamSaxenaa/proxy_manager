@@ -98,7 +98,7 @@ const SessionCard = ({ session, navigate }) => {
                 </span>
             </div>
 
-            <div style={{ fontSize: 13, color: 'var(--text-muted)', display: 'flex', flexWrap: 'wrap', gap: 14 }}>
+            <div style={{ fontSize: 13, color: 'var(--text-muted)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '8px 12px' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><ClockIcon /> {session.start_time} – {session.end_time}</span>
                 <span>Room {session.room_no || 'TBA'}</span>
                 <span>Section {session.section || 'A'}</span>
@@ -106,17 +106,17 @@ const SessionCard = ({ session, navigate }) => {
             </div>
 
             {session.computed_status === 'ongoing' && (
-                <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 8, marginTop: 4 }}>
                     <button
                         className="btn btn-primary"
-                        style={{ fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}
+                        style={{ fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
                         onClick={() => navigate('/dashboard/generate-qr')}
                     >
                         <IconQr /> Generate QR
                     </button>
                     <button
                         className="btn btn-secondary"
-                        style={{ fontSize: 13 }}
+                        style={{ fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
                         onClick={() => navigate('/dashboard/mark-attendance')}
                     >
                         Mark Attendance
