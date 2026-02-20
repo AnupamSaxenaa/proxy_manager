@@ -84,6 +84,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background var(--transition-normal), color var(--transition-normal);
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 body::before {
@@ -1064,7 +1066,7 @@ select.input-field {
 .mobile-menu-btn {
   display: none;
   position: fixed;
-  top: 16px;
+  top: calc(16px + env(safe-area-inset-top, 0px));
   left: 16px;
   z-index: 200;
   background: var(--glass-bg);
@@ -1149,7 +1151,7 @@ select.input-field {
 
   .page-header {
     padding: 16px;
-    padding-top: 56px;
+    padding-top: calc(56px + env(safe-area-inset-top, 0px));
   }
 
   .page-title {
