@@ -46,7 +46,10 @@ const markBulkAttendance = async (req, res) => {
             await pool.query(
                 `INSERT INTO attendance_records (session_id, student_id, status, marked_by)
          VALUES (?, ?, ?, 'manual')
-         ON DUPLICATE KEY UPDATE status = VALUES(status), marked_at = CURRENT_TIMESTAMP`,
+         ON DUPLICATE KEY UPDATE 
+            marked_by = IF(status != VALUES(status), VALUES(marked_by), marked_by),
+            marked_at = IF(status != VALUES(status), CURRENT_TIMESTAMP, marked_at),
+            status = VALUES(status)`,
                 [session_id, record.student_id, record.status || 'present']
             );
         }

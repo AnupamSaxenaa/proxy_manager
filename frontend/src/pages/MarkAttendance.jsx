@@ -60,13 +60,23 @@ const MarkAttendance = () => {
             const sessionRes = await api.post(`/classes/${selectedClass}/session`, {
                 session_date: new Date().toISOString().split('T')[0],
             });
-            setSessionId(sessionRes.data.sessionId);
+            const sId = sessionRes.data.sessionId;
+            setSessionId(sId);
 
-            const studentRes = await api.get(`/classes/${selectedClass}/students`);
+            const [studentRes, attendanceRes] = await Promise.all([
+                api.get(`/classes/${selectedClass}/students`),
+                api.get(`/attendance/session/${sId}`)
+            ]);
+
             setStudents(studentRes.data.students);
 
             const initial = {};
-            studentRes.data.students.forEach(s => { initial[s.id] = 'absent'; });
+            const existingRecords = attendanceRes.data.records || [];
+
+            studentRes.data.students.forEach(s => {
+                const existing = existingRecords.find(r => r.student_id === s.id);
+                initial[s.id] = existing ? existing.status : 'absent';
+            });
             setAttendance(initial);
 
             toast.success('Session started. Mark attendance below.');
