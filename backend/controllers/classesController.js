@@ -278,6 +278,66 @@ const getSessionsByClass = async (req, res) => {
     }
 };
 
+const deleteClass = async (req, res) => {
+    try {
+        await pool.query('DELETE FROM classes WHERE id = ?', [req.params.id]);
+        res.json({ message: 'Class deleted successfully.' });
+    } catch (error) {
+        console.error('Delete class error:', error);
+        res.status(500).json({ error: 'Failed to delete class.' });
+    }
+};
+
+const clearClasses = async (req, res) => {
+    try {
+        await pool.query('DELETE FROM classes');
+        res.json({ message: 'All classes cleared successfully.' });
+    } catch (error) {
+        console.error('Clear classes error:', error);
+        res.status(500).json({ error: 'Failed to clear classes.' });
+    }
+};
+
+const deleteCourse = async (req, res) => {
+    try {
+        await pool.query('DELETE FROM courses WHERE id = ?', [req.params.id]);
+        res.json({ message: 'Course deleted successfully.' });
+    } catch (error) {
+        console.error('Delete course error:', error);
+        res.status(500).json({ error: 'Failed to delete course.' });
+    }
+};
+
+const clearCourses = async (req, res) => {
+    try {
+        await pool.query('DELETE FROM courses');
+        res.json({ message: 'All courses cleared successfully.' });
+    } catch (error) {
+        console.error('Clear courses error:', error);
+        res.status(500).json({ error: 'Failed to clear courses.' });
+    }
+};
+
+const removeStudentFromClass = async (req, res) => {
+    try {
+        await pool.query('DELETE FROM student_classes WHERE class_id = ? AND student_id = ?', [req.params.classId, req.params.studentId]);
+        res.json({ message: 'Student removed from class.' });
+    } catch (error) {
+        console.error('Remove student error:', error);
+        res.status(500).json({ error: 'Failed to remove student.' });
+    }
+};
+
+const clearStudentsFromClass = async (req, res) => {
+    try {
+        await pool.query('DELETE FROM student_classes WHERE class_id = ?', [req.params.classId]);
+        res.json({ message: 'All students cleared from class.' });
+    } catch (error) {
+        console.error('Clear students error:', error);
+        res.status(500).json({ error: 'Failed to clear students.' });
+    }
+};
+
 module.exports = {
     listClasses,
     createClass,
@@ -288,4 +348,11 @@ module.exports = {
     createSession,
     getTodaySessions,
     getSessionsByClass,
+    deleteClass,
+    clearClasses,
+    deleteCourse,
+    clearCourses,
+    removeStudentFromClass,
+    clearStudentsFromClass
 };
+
