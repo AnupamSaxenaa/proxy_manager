@@ -74,14 +74,14 @@ const AIChatbot = () => {
             {!isOpen && (
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="btn btn-primary"
+                    className="btn"
                     style={{
                         width: 60, height: 60, borderRadius: 30, padding: 0,
-                        boxShadow: '0 8px 32px rgba(99, 102, 241, 0.4)',
-                        background: 'linear-gradient(135deg, #6366f1, #a855f7)',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+                        background: 'var(--text-primary)',
                         border: 'none',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: 'white',
+                        color: 'var(--bg-primary)',
                         animation: 'bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
                     }}
                 >
@@ -110,21 +110,21 @@ const AIChatbot = () => {
                     {/* Header */}
                     <div style={{
                         padding: '16px 20px',
-                        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.05))',
+                        background: 'var(--bg-secondary)',
                         borderBottom: '1px solid var(--border-color)',
                         display: 'flex', justifyContent: 'space-between', alignItems: 'center'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                             <div style={{
                                 width: 36, height: 36, borderRadius: 18,
-                                background: 'linear-gradient(135deg, #6366f1, #a855f7)',
+                                background: 'var(--text-primary)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                color: 'white'
+                                color: 'var(--bg-primary)'
                             }}>
                                 <IconBot />
                             </div>
                             <div>
-                                <div style={{ fontWeight: 600, fontSize: 15 }}>Classiq Assist</div>
+                                <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--text-primary)' }}>Classiq Assist</div>
                                 <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Powered by AI</div>
                             </div>
                         </div>
