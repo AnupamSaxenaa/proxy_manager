@@ -16,17 +16,27 @@ const generateQR = async (req, res) => {
         );
 
         const qrToken = crypto.randomBytes(32).toString('hex');
-        const expiresAt = new Date(Date.now() + expiry_seconds * 1000);
 
         const [result] = await pool.query(
-            'INSERT INTO qr_sessions (session_id, qr_token, expires_at) VALUES (?, ?, ?)',
-            [session_id, qrToken, expiresAt]
+            'INSERT INTO qr_sessions (session_id, qr_token, expires_at) VALUES (?, ?, DATE_ADD(UTC_TIMESTAMP(), INTERVAL ? SECOND))',
+            [session_id, qrToken, expiry_seconds]
         );
+
+        const [newSession] = await pool.query(
+            'SELECT expires_at FROM qr_sessions WHERE id = ?',
+            [result.insertId]
+        );
+
+        // Standardize returning ISO string with Z
+        let dbExpiresAt = newSession[0].expires_at;
+        if (typeof dbExpiresAt === 'string' && !dbExpiresAt.endsWith('Z')) {
+            dbExpiresAt = dbExpiresAt.replace(' ', 'T') + 'Z';
+        }
 
         const qrData = JSON.stringify({
             token: qrToken,
             session_id: session_id,
-            expires_at: expiresAt.toISOString(),
+            expires_at: dbExpiresAt,
         });
 
         const qrImageUrl = await QRCode.toDataURL(qrData, {
@@ -42,7 +52,7 @@ const generateQR = async (req, res) => {
             qr_id: result.insertId,
             qr_image: qrImageUrl,
             qr_token: qrToken,
-            expires_at: expiresAt,
+            expires_at: dbExpiresAt,
             expiry_seconds,
         });
     } catch (error) {
@@ -60,7 +70,7 @@ const validateQR = async (req, res) => {
         }
 
         const [qrSessions] = await pool.query(
-            'SELECT * FROM qr_sessions WHERE qr_token = ? AND is_active = TRUE',
+            'SELECT *, (expires_at < UTC_TIMESTAMP()) AS is_expired FROM qr_sessions WHERE qr_token = ? AND is_active = TRUE',
             [qr_token]
         );
 
@@ -70,7 +80,7 @@ const validateQR = async (req, res) => {
 
         const qrSession = qrSessions[0];
 
-        if (new Date() > new Date(qrSession.expires_at)) {
+        if (qrSession.is_expired) {
             await pool.query('UPDATE qr_sessions SET is_active = FALSE WHERE id = ?', [qrSession.id]);
             return res.status(410).json({ error: 'QR code has expired. Please scan a new one.' });
         }
@@ -113,7 +123,7 @@ const validateQR = async (req, res) => {
 const getActiveQR = async (req, res) => {
     try {
         const [qrSessions] = await pool.query(
-            'SELECT * FROM qr_sessions WHERE session_id = ? AND is_active = TRUE AND expires_at > NOW() ORDER BY created_at DESC LIMIT 1',
+            'SELECT * FROM qr_sessions WHERE session_id = ? AND is_active = TRUE AND expires_at > UTC_TIMESTAMP() ORDER BY created_at DESC LIMIT 1',
             [req.params.sessionId]
         );
 
