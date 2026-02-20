@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <clipPath id="rounded">
+      <rect width="512" height="512" rx="112" ry="112"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" ry="112" fill="#111111"/>
+
+  <!-- Letter C arc — open arc from ~45deg to ~315deg (clockwise gap on right) -->
+  <path
+    d="M 326 148
+       A 118 118 0 1 0 326 364"
+    stroke="#ffffff"
+    stroke-width="52"
+    stroke-linecap="round"
+    fill="none"
+  />
+
+  <!-- Checkmark tick integrated at the open end (bottom-right of the C) -->
+  <polyline
+    points="296,340 326,364 390,290"
+    stroke="#ffffff"
+    stroke-width="48"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+</svg>
