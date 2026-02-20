@@ -232,8 +232,16 @@ const getTodaySessions = async (req, res) => {
             const endMin = eh * 60 + em;
 
             let computed_status = 'upcoming';
-            if (currentMinutes >= startMin && currentMinutes < endMin) computed_status = 'ongoing';
-            else if (currentMinutes >= endMin) computed_status = 'completed';
+            if (startMin > endMin) {
+                // Class spans midnight (e.g. 21:00 to 12:00)
+                // Since this query only returns classes starting "today",
+                // it's ongoing from start time until midnight.
+                if (currentMinutes >= startMin) computed_status = 'ongoing';
+            } else {
+                // Normal class
+                if (currentMinutes >= startMin && currentMinutes < endMin) computed_status = 'ongoing';
+                else if (currentMinutes >= endMin) computed_status = 'completed';
+            }
 
             return { ...s, computed_status };
         });
