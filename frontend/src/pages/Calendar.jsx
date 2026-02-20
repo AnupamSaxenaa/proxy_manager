@@ -168,76 +168,81 @@ const Calendar = () => {
                         </div>
                     </div>
 
-                    {/* Grid Header */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8, marginBottom: 8 }}>
-                        {dayNames.map(day => (
-                            <div key={day} style={{ textAlign: 'center', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-                                {day}
+                    {/* Responsive Grid Wrapper */}
+                    <div style={{ overflowX: 'auto', paddingBottom: 8, margin: '0 -12px', padding: '0 12px' }}>
+                        <div style={{ minWidth: 700 }}>
+                            {/* Grid Header */}
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8, marginBottom: 8 }}>
+                                {dayNames.map(day => (
+                                    <div key={day} style={{ textAlign: 'center', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
+                                        {day}
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
 
-                    {/* Grid Days */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
-                        {/* Empty slots for start of month */}
-                        {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-                            <div key={`empty-${i}`} style={{ minHeight: 100, background: 'rgba(0,0,0,0.02)', borderRadius: 12, border: '1px solid transparent' }} />
-                        ))}
+                            {/* Grid Days */}
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
+                                {/* Empty slots for start of month */}
+                                {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+                                    <div key={`empty-${i}`} style={{ minHeight: 100, background: 'rgba(0,0,0,0.02)', borderRadius: 12, border: '1px solid transparent' }} />
+                                ))}
 
-                        {/* Actual days */}
-                        {Array.from({ length: daysInMonth }).map((_, i) => {
-                            const day = i + 1;
-                            const dayEvents = getEventsForDay(day);
-                            const today = isToday(day);
+                                {/* Actual days */}
+                                {Array.from({ length: daysInMonth }).map((_, i) => {
+                                    const day = i + 1;
+                                    const dayEvents = getEventsForDay(day);
+                                    const today = isToday(day);
 
-                            return (
-                                <div
-                                    key={day}
-                                    onClick={() => handleDayClick(day)}
-                                    style={{
-                                        minHeight: 110,
-                                        background: today ? 'var(--text-primary)' : 'var(--bg-input)',
-                                        color: today ? 'var(--bg-primary)' : 'var(--text-primary)',
-                                        borderRadius: 12,
-                                        border: today ? '1px solid var(--text-primary)' : '1px solid var(--border-color)',
-                                        padding: 8,
-                                        cursor: 'pointer',
-                                        transition: 'all var(--transition-fast)',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: 4
-                                    }}
-                                    className="calendar-day-hover"
-                                >
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                                        <span style={{ fontSize: 14, fontWeight: today ? 800 : 600 }}>{day}</span>
-                                        {dayEvents.length > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: today ? 'var(--bg-primary)' : 'var(--text-primary)', color: today ? 'var(--text-primary)' : 'var(--bg-primary)', padding: '2px 6px', borderRadius: 10 }}>{dayEvents.length}</span>}
-                                    </div>
-
-                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4, overflow: 'hidden' }}>
-                                        {dayEvents.slice(0, 3).map((ev, idx) => (
-                                            <div key={idx} style={{
-                                                fontSize: 11,
-                                                padding: '4px 6px',
-                                                background: today ? 'rgba(255,255,255,0.2)' : 'var(--bg-card)',
-                                                borderRadius: 4,
-                                                whiteSpace: 'nowrap',
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                border: today ? 'none' : '1px solid var(--border-color)'
-                                            }}>
-                                                • {ev.title}
+                                    return (
+                                        <div
+                                            key={day}
+                                            onClick={() => handleDayClick(day)}
+                                            style={{
+                                                minHeight: 110,
+                                                background: today ? 'var(--text-primary)' : 'var(--bg-input)',
+                                                color: today ? 'var(--bg-primary)' : 'var(--text-primary)',
+                                                borderRadius: 12,
+                                                border: today ? '1px solid var(--text-primary)' : '1px solid var(--border-color)',
+                                                padding: 8,
+                                                cursor: 'pointer',
+                                                transition: 'all var(--transition-fast)',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                gap: 4
+                                            }}
+                                            className="calendar-day-hover"
+                                        >
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                                                <span style={{ fontSize: 14, fontWeight: today ? 800 : 600 }}>{day}</span>
+                                                {dayEvents.length > 0 && <span style={{ fontSize: 10, fontWeight: 700, background: today ? 'var(--bg-primary)' : 'var(--text-primary)', color: today ? 'var(--text-primary)' : 'var(--bg-primary)', padding: '2px 6px', borderRadius: 10 }}>{dayEvents.length}</span>}
                                             </div>
-                                        ))}
-                                        {dayEvents.length > 3 && (
-                                            <div style={{ fontSize: 10, color: today ? 'rgba(255,255,255,0.8)' : 'var(--text-muted)', textAlign: 'center' }}>
-                                                +{dayEvents.length - 3} more
+
+                                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4, overflow: 'hidden' }}>
+                                                {dayEvents.slice(0, 3).map((ev, idx) => (
+                                                    <div key={idx} style={{
+                                                        fontSize: 11,
+                                                        padding: '4px 6px',
+                                                        background: today ? 'rgba(255,255,255,0.2)' : 'var(--bg-card)',
+                                                        borderRadius: 4,
+                                                        whiteSpace: 'nowrap',
+                                                        overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        border: today ? 'none' : '1px solid var(--border-color)'
+                                                    }}>
+                                                        • {ev.title}
+                                                    </div>
+                                                ))}
+                                                {dayEvents.length > 3 && (
+                                                    <div style={{ fontSize: 10, color: today ? 'rgba(255,255,255,0.8)' : 'var(--text-muted)', textAlign: 'center' }}>
+                                                        +{dayEvents.length - 3} more
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                </div>
-                            );
-                        })}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
