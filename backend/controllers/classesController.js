@@ -166,8 +166,9 @@ const createSession = async (req, res) => {
 
 const getTodaySessions = async (req, res) => {
     try {
-        const today = new Date().toISOString().split('T')[0];
-        const dayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+        const istNow = new Date(Date.now() + (5.5 * 60 * 60 * 1000));
+        const today = istNow.toISOString().split('T')[0];
+        const dayName = new Date().toLocaleDateString('en-US', { weekday: 'long', timeZone: 'Asia/Kolkata' });
 
         let classQuery = `
       SELECT c.id as class_id, c.course_id, c.faculty_id, c.room_no, c.day_of_week,
@@ -220,7 +221,9 @@ const getTodaySessions = async (req, res) => {
         );
 
         const now = new Date();
-        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        const istOffset = 5.5 * 60;
+        const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+        const currentMinutes = (utcMinutes + istOffset) % (24 * 60);
 
         const enriched = sessions.map(s => {
             const [sh, sm] = (s.start_time || '00:00').split(':').map(Number);
