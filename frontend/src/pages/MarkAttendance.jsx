@@ -38,6 +38,13 @@ const MarkAttendance = () => {
     const [todayClasses, setTodayClasses] = useState([]);
     const [historicalClasses, setHistoricalClasses] = useState([]);
 
+    // Core Session State
+    const [selectedClass, setSelectedClass] = useState('');
+    const [sessionId, setSessionId] = useState(null);
+    const [students, setStudents] = useState([]);
+    const [attendance, setAttendance] = useState({});
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         const fetchSchedule = async () => {
             try {

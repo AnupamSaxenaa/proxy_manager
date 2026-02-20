@@ -247,9 +247,9 @@ const Calendar = () => {
                         </div>
                     </div>
 
-                    {/* Mobile Horizontal Boxes View */}
+                    {/* Mobile Vertical List View */}
                     <div className="calendar-mobile-view">
-                        <div style={{ display: 'flex', overflowX: 'auto', gap: 12, paddingBottom: 16, margin: '0 -12px', padding: '0 12px 16px 12px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingBottom: 16 }}>
                             {Array.from({ length: daysInMonth }).map((_, i) => {
                                 const day = i + 1;
                                 const dayEvents = getEventsForDay(day);
@@ -262,32 +262,36 @@ const Calendar = () => {
                                         key={`mobile-${day}`}
                                         onClick={() => handleDayClick(day)}
                                         style={{
-                                            minWidth: 70,
-                                            padding: '12px 8px',
+                                            width: '100%',
+                                            padding: '16px 20px',
                                             background: today ? 'var(--text-primary)' : 'var(--bg-card)',
                                             color: today ? 'var(--bg-primary)' : 'var(--text-primary)',
                                             borderRadius: 16,
                                             border: today ? 'none' : '1px solid var(--border-color)',
                                             display: 'flex',
-                                            flexDirection: 'column',
+                                            flexDirection: 'row',
                                             alignItems: 'center',
-                                            gap: 8,
+                                            justifyContent: 'space-between',
                                             cursor: 'pointer',
-                                            position: 'relative',
-                                            flexShrink: 0,
-                                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                                            boxSizing: 'border-box'
                                         }}
                                         className="calendar-day-hover"
                                     >
-                                        <span style={{ fontSize: 12, textTransform: 'uppercase', opacity: today ? 0.9 : 0.6, fontWeight: 600 }}>{dayNameShort}</span>
-                                        <span style={{ fontSize: 24, fontWeight: '800' }}>{day}</span>
-                                        {dayEvents.length > 0 && (
-                                            <div style={{ position: 'absolute', top: -6, right: -6, background: 'var(--brand-primary)', color: 'white', fontSize: 10, fontWeight: 'bold', width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--bg-primary)' }}>
-                                                {dayEvents.length}
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span style={{ fontSize: 13, textTransform: 'uppercase', opacity: today ? 0.9 : 0.6, fontWeight: 600 }}>{dayNameShort}</span>
+                                            <span style={{ fontSize: 24, fontWeight: '800', lineHeight: 1.2 }}>{day}</span>
+                                        </div>
+
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                            <div style={{ fontSize: 12, fontWeight: 600, opacity: 0.8 }}>
+                                                {dayEvents.length} {dayEvents.length === 1 ? 'event' : 'events'}
                                             </div>
-                                        )}
-                                        <div style={{ fontSize: 10, fontWeight: 500, opacity: 0.7 }}>
-                                            {dayEvents.length} events
+                                            {dayEvents.length > 0 && (
+                                                <div style={{ background: today ? 'var(--bg-primary)' : 'var(--brand-primary)', color: today ? 'var(--text-primary)' : 'white', fontSize: 11, fontWeight: 'bold', width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    {dayEvents.length}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )
