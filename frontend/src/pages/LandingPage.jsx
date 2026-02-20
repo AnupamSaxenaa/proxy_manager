@@ -147,14 +147,16 @@ const LandingPage = () => {
                         <button onClick={toggleTheme} style={{ background: 'none', border: '1px solid var(--border-color)', borderRadius: 8, padding: '6px 8px', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center' }}>
                             {isDark ? <IconSun /> : <IconMoon />}
                         </button>
-                        {isAuthenticated ? (
-                            <button onClick={() => navigate('/dashboard')} style={btnPrimary}>Dashboard</button>
-                        ) : (
-                            <>
-                                <button onClick={() => openAuth('login')} style={btnOutline}>Sign In</button>
-                                <button onClick={() => openAuth('register')} style={btnPrimary}>Get Started</button>
-                            </>
-                        )}
+                        <div className="nav-auth-btns" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            {isAuthenticated ? (
+                                <button onClick={() => navigate('/dashboard')} style={btnPrimary}>Dashboard</button>
+                            ) : (
+                                <>
+                                    <button onClick={() => openAuth('login')} style={btnOutline}>Sign In</button>
+                                    <button onClick={() => openAuth('register')} style={btnPrimary}>Get Started</button>
+                                </>
+                            )}
+                        </div>
                         <button onClick={() => setMobileOpen(!mobileOpen)} className="mob-menu-btn" style={{ display: 'none', background: 'none', border: '1px solid var(--border-color)', borderRadius: 8, padding: '6px', cursor: 'pointer', color: 'var(--text-primary)' }}>
                             {mobileOpen ? <IconClose /> : <IconMenu />}
                         </button>
@@ -179,7 +181,7 @@ const LandingPage = () => {
                 )}
             </nav>
 
-            <section id="home" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '120px 24px 80px' }}>
+            <section id="home" className="lp-section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 'clamp(80px, 12vw, 120px) 16px clamp(40px, 8vw, 80px)' }}>
                 <div style={{ maxWidth: 760 }}>
                     <div style={{ display: 'inline-block', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 999, padding: '6px 18px', fontSize: 13, color: 'var(--text-muted)', marginBottom: 36, fontWeight: 500 }}>
                         Smart Attendance Management — Classiq
@@ -200,7 +202,7 @@ const LandingPage = () => {
                         </button>
                     </div>
 
-                    <div style={{ marginTop: 80, display: 'flex', justifyContent: 'center', gap: 56, flexWrap: 'wrap' }}>
+                    <div style={{ marginTop: 'clamp(32px, 6vw, 80px)', display: 'flex', justifyContent: 'center', gap: 'clamp(24px, 4vw, 56px)', flexWrap: 'wrap' }}>
                         {[['AI', 'Face ID'], ['< 2s', 'Scan Time'], ['3', 'User Roles'], ['Live', 'Analytics']].map(([val, label]) => (
                             <div key={label} style={{ textAlign: 'center' }}>
                                 <div style={{ fontSize: 30, fontWeight: 900, marginBottom: 4, letterSpacing: '-1px' }}>{val}</div>
@@ -211,8 +213,8 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            <div style={{ borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-secondary)', padding: '20px 24px' }}>
-                <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32, flexWrap: 'wrap' }}>
+            <div className="lp-feature-bar" style={{ borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-secondary)', padding: '16px 16px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'clamp(14px, 3vw, 32px)', flexWrap: 'nowrap', minWidth: 'max-content' }}>
                     {['Face Recognition', 'QR Backup', 'Student Dashboard', 'Admin Analytics', 'At-risk Alerts'].map(f => (
                         <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>
                             <span style={{ color: 'var(--text-primary)', display: 'flex' }}><IconCheck /></span>
@@ -222,7 +224,7 @@ const LandingPage = () => {
                 </div>
             </div>
 
-            <section id="features" style={{ padding: '100px 24px', background: 'var(--bg-primary)' }}>
+            <section id="features" className="lp-section" style={{ padding: 'clamp(48px, 8vw, 100px) 16px', background: 'var(--bg-primary)' }}>
                 <div style={{ maxWidth: 1200, margin: '0 auto' }}>
                     <div style={{ textAlign: 'center', marginBottom: 64 }}>
                         <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>Features</div>
@@ -243,7 +245,7 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            <section style={{ padding: '100px 24px', background: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)' }}>
+            <section className="lp-section-alt" style={{ padding: 'clamp(48px, 8vw, 100px) 16px', background: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)' }}>
                 <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(340px, 100%), 1fr))', gap: 64, alignItems: 'center' }}>
                     <div>
                         <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>How it works</div>
@@ -291,7 +293,7 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            <section id="about" style={{ padding: '100px 24px', background: 'var(--bg-primary)' }}>
+            <section id="about" className="lp-section" style={{ padding: 'clamp(48px, 8vw, 100px) 16px', background: 'var(--bg-primary)' }}>
                 <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
                     <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>About</div>
                     <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 900, letterSpacing: '-1px', marginBottom: 24 }}>Why Classiq?</h2>
@@ -307,7 +309,7 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            <section style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: '90px 24px', textAlign: 'center' }}>
+            <section className="lp-cta" style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: 'clamp(48px, 8vw, 90px) 16px', textAlign: 'center' }}>
                 <div style={{ maxWidth: 600, margin: '0 auto' }}>
                     <h2 style={{ fontSize: 'clamp(28px, 4vw, 46px)', fontWeight: 900, letterSpacing: '-1.5px', marginBottom: 16 }}>
                         Ready to ditch the attendance sheet?
