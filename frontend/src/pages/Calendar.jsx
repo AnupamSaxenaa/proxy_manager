@@ -87,13 +87,24 @@ const Calendar = () => {
     };
 
     const getEventsForDay = (day) => {
-        const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        return events.filter(e => e.event_date.startsWith(dateStr));
+        // Construct the strict local date string
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const d = String(day).padStart(2, '0');
+        const dateStr = `${year}-${month}-${d}`;
+        return events.filter(e => {
+            // Compare the YYYY-MM-DD prefix purely as a string
+            return e.event_date && e.event_date.startsWith(dateStr);
+        });
     };
 
     const handleDayClick = (day) => {
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const d = String(day).padStart(2, '0');
+        const dateStr = `${year}-${month}-${d}`;
+
         const dayEvents = getEventsForDay(day);
-        const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         setSelectedDate(dateStr);
         setViewingDayEvents(dayEvents);
         setShowModal(true);
@@ -248,23 +259,45 @@ const Calendar = () => {
                                 {viewingDayEvents.length === 0 ? (
                                     <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>No events scheduled for this day.</p>
                                 ) : (
-                                    viewingDayEvents.map(ev => (
-                                        <div key={ev.id} style={{ padding: 12, border: '1px solid var(--border-color)', borderRadius: 8, background: 'var(--bg-input)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                            <div>
-                                                <div style={{ fontWeight: 600, fontSize: 14 }}>{ev.title}</div>
-                                                {ev.description && <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>{ev.description}</div>}
-                                                <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
-                                                    <span className="badge">{ev.event_type}</span>
-                                                    {ev.is_global === 1 && <span className="badge" style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)' }}>GLOBAL</span>}
+                                    viewingDayEvents.map(ev => {
+                                        if (ev.is_class) {
+                                            return (
+                                                <div key={ev.id} style={{ padding: 12, border: '1px solid var(--border-color)', borderRadius: 8, background: 'var(--bg-card)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                    <div>
+                                                        <div style={{ fontWeight: 700, fontSize: 15 }}>{ev.title}</div>
+                                                        <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                                                            {ev.start_time} - {ev.end_time}
+                                                        </div>
+                                                        <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                            {ev.description}
+                                                        </div>
+                                                        <div style={{ marginTop: 8 }}>
+                                                            <span className="badge" style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)' }}>CLASS</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
+                                            );
+                                        }
+
+                                        return (
+                                            <div key={ev.id} style={{ padding: 12, border: '1px solid var(--border-color)', borderRadius: 8, background: 'var(--bg-input)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                <div>
+                                                    <div style={{ fontWeight: 600, fontSize: 14 }}>{ev.title}</div>
+                                                    {ev.description && <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>{ev.description}</div>}
+                                                    <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+                                                        <span className="badge">{ev.event_type}</span>
+                                                        {ev.is_global === 1 && <span className="badge" style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)' }}>GLOBAL</span>}
+                                                    </div>
+                                                </div>
+                                                {(ev.created_by === user.id || user.role === 'admin') && (
+                                                    <button onClick={() => handleDeleteEvent(ev.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 4 }}>
+                                                        <IconTrash />
+                                                    </button>
+                                                )}
                                             </div>
-                                            {(ev.created_by === user.id || user.role === 'admin') && (
-                                                <button onClick={() => handleDeleteEvent(ev.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 4 }}>
-                                                    <IconTrash />
-                                                </button>
-                                            )}
-                                        </div>
-                                    ))
+                                        );
+                                    })
                                 )}
                             </div>
 

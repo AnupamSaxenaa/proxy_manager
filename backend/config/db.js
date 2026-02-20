@@ -12,6 +12,8 @@ const dbConfig = {
   queueLimit: 0,
   enableKeepAlive: true,
   keepAliveInitialDelay: 0,
+  dateStrings: true,     // <--- Treat DB DATE types as strings to prevent JS timezone shifts
+  timezone: '+00:00'     // <--- Enforce UTC timezone connection
 };
 
 if (process.env.DB_SSL === 'true') {
