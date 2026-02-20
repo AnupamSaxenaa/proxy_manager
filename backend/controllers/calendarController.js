@@ -31,7 +31,7 @@ const getEvents = async (req, res) => {
                 SELECT 
                     cs.id, 
                     cs.session_date as event_date, 
-                    c.course_name as title,
+                    co.name as title,
                     CONCAT('Room ', c.room_no, ' • ', c.start_time, ' - ', c.end_time) as description,
                     'class' as event_type,
                     1 as is_class,
@@ -39,6 +39,7 @@ const getEvents = async (req, res) => {
                     c.end_time
                 FROM class_sessions cs
                 JOIN classes c ON cs.class_id = c.id
+                JOIN courses co ON c.course_id = co.id
                 JOIN student_classes sc ON sc.class_id = c.id
                 WHERE sc.student_id = ?
             `;
@@ -59,7 +60,7 @@ const getEvents = async (req, res) => {
                 SELECT 
                     cs.id, 
                     cs.session_date as event_date, 
-                    c.course_name as title,
+                    co.name as title,
                     CONCAT('Room ', c.room_no, ' • ', c.start_time, ' - ', c.end_time) as description,
                     'class' as event_type,
                     1 as is_class,
@@ -67,6 +68,7 @@ const getEvents = async (req, res) => {
                     c.end_time
                 FROM class_sessions cs
                 JOIN classes c ON cs.class_id = c.id
+                JOIN courses co ON c.course_id = co.id
                 WHERE c.faculty_id = ?
             `;
             classParams = [userId];
