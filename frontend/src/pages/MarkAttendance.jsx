@@ -42,22 +42,27 @@ const MarkAttendance = () => {
     const [attendance, setAttendance] = useState({}); // { 1: { status: 'present', marked_by: 'facial' } }
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        const fetchClasses = async () => {
-            try {
-                const res = await api.get('/classes');
-                setClasses(res.data.classes);
-            } catch {
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
+    useEffect(() => {
+        const fetchClassesForDate = async () => {
+            try {
+                const res = await api.get(`/classes/sessions/today?date=${selectedDate}`);
+                setClasses(res.data.sessions || []);
+                setSelectedClass('');
+            } catch {
+                toast.error('Failed to load schedule for date');
             }
         };
-        fetchClasses();
-    }, []);
+        fetchClassesForDate();
+    }, [selectedDate]);
 
     const startSession = async () => {
         if (!selectedClass) return;
         try {
-            const sessionRes = await api.post(`/classes/${selectedClass}/session`, {});
+            const sessionRes = await api.post(`/classes/${selectedClass}/session`, {
+                session_date: selectedDate
+            });
             const sId = sessionRes.data.sessionId;
             setSessionId(sId);
 
@@ -144,20 +149,34 @@ const MarkAttendance = () => {
             <div className="page-content fade-in">
                 {!sessionId ? (
                     <div className="chart-card" style={{ maxWidth: 500 }}>
-                        <div className="chart-title">Select Class</div>
+                        <div className="chart-title">Select Class & Date</div>
+                        <div className="input-group">
+                            <label>Date</label>
+                            <input
+                                type="date"
+                                className="input-field"
+                                value={selectedDate}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                            />
+                        </div>
                         <div className="input-group">
                             <label>Class</label>
                             <select className="input-field" value={selectedClass} onChange={e => setSelectedClass(e.target.value)}>
                                 <option value="">Choose a class...</option>
                                 {classes.map(c => (
-                                    <option key={c.id} value={c.id}>
-                                        {c.course_code} - {c.course_name} ({c.day_of_week} {c.start_time})
+                                    <option key={c.class_id} value={c.class_id}>
+                                        {c.course_code} - {c.course_name} ({c.start_time})
                                     </option>
                                 ))}
                             </select>
+                            {classes.length === 0 && (
+                                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>
+                                    No classes scheduled for this date.
+                                </div>
+                            )}
                         </div>
                         <button className="btn btn-primary" onClick={startSession} disabled={!selectedClass}>
-                            Start Session
+                            Load Attendance Roster
                         </button>
                     </div>
                 ) : (

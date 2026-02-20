@@ -147,10 +147,6 @@ const createSession = async (req, res) => {
         const todayIST = istNow.toISOString().split('T')[0];
         const date = session_date || todayIST;
 
-        if (date !== todayIST) {
-            return res.status(403).json({ error: 'Attendance can only be managed on the exact day of the scheduled class. You cannot create sessions for past or future dates.' });
-        }
-
         const [result] = await pool.query(
             'INSERT INTO class_sessions (class_id, session_date, topic, status) VALUES (?, ?, ?, ?)',
             [classId, date, topic || null, 'ongoing']
@@ -178,7 +174,12 @@ const getTodaySessions = async (req, res) => {
     try {
         const istNow = new Date(Date.now() + (5.5 * 60 * 60 * 1000));
         const today = istNow.toISOString().split('T')[0];
-        const dayName = new Date().toLocaleDateString('en-US', { weekday: 'long', timeZone: 'Asia/Kolkata' });
+        const targetDate = req.query.date || today;
+
+        // Parse the target string into a Date object so we can extract the weekday.
+        // Appending T12:00:00Z ensures the timezone doesn't shift the day backwards if running natively in UTC
+        const targetObj = new Date(`${targetDate}T12:00:00Z`);
+        const dayName = targetObj.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'Asia/Kolkata' });
 
         let classQuery = `
       SELECT c.id as class_id, c.course_id, c.faculty_id, c.room_no, c.day_of_week,
@@ -228,7 +229,7 @@ const getTodaySessions = async (req, res) => {
          ${req.user.role === 'faculty' ? 'AND c.faculty_id = ?' : ''}
          ${req.user.role === 'student' ? 'AND c.id IN (SELECT class_id FROM student_classes WHERE student_id = ?)' : ''}
        ORDER BY c.start_time`,
-            req.user.role === 'admin' ? [today, dayName] : [today, dayName, req.user.id]
+            req.user.role === 'admin' ? [targetDate, dayName] : [targetDate, dayName, req.user.id]
         );
 
         const now = new Date();
@@ -243,15 +244,20 @@ const getTodaySessions = async (req, res) => {
             const endMin = eh * 60 + em;
 
             let computed_status = 'upcoming';
-            if (startMin > endMin) {
-                // Class spans midnight (e.g. 21:00 to 12:00)
-                // Since this query only returns classes starting "today",
-                // it's ongoing from start time until midnight.
-                if (currentMinutes >= startMin) computed_status = 'ongoing';
+
+            if (targetDate < today) {
+                computed_status = 'completed';
+            } else if (targetDate > today) {
+                computed_status = 'upcoming';
             } else {
-                // Normal class
-                if (currentMinutes >= startMin && currentMinutes < endMin) computed_status = 'ongoing';
-                else if (currentMinutes >= endMin) computed_status = 'completed';
+                if (startMin > endMin) {
+                    // Class spans midnight (e.g. 21:00 to 12:00)
+                    if (currentMinutes >= startMin) computed_status = 'ongoing';
+                } else {
+                    // Normal class
+                    if (currentMinutes >= startMin && currentMinutes < endMin) computed_status = 'ongoing';
+                    else if (currentMinutes >= endMin) computed_status = 'completed';
+                }
             }
 
             return {
