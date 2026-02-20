@@ -39,7 +39,7 @@ const MarkAttendance = () => {
     const [selectedClass, setSelectedClass] = useState('');
     const [sessionId, setSessionId] = useState(null);
     const [students, setStudents] = useState([]);
-    const [attendance, setAttendance] = useState({});
+    const [attendance, setAttendance] = useState({}); // { 1: { status: 'present', marked_by: 'facial' } }
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -75,7 +75,10 @@ const MarkAttendance = () => {
 
             studentRes.data.students.forEach(s => {
                 const existing = existingRecords.find(r => r.student_id === s.id);
-                initial[s.id] = existing ? existing.status : 'absent';
+                initial[s.id] = {
+                    status: existing ? existing.status : 'absent',
+                    marked_by: existing ? existing.marked_by : 'manual'
+                };
             });
             setAttendance(initial);
 
@@ -88,28 +91,39 @@ const MarkAttendance = () => {
     const toggleAttendance = (studentId) => {
         setAttendance(prev => ({
             ...prev,
-            [studentId]: prev[studentId] === 'present' ? 'absent' : 'present',
+            [studentId]: {
+                status: prev[studentId]?.status === 'present' ? 'absent' : 'present',
+                marked_by: 'manual'
+            }
         }));
     };
 
     const markAllPresent = () => {
-        const updated = {};
-        students.forEach(s => { updated[s.id] = 'present'; });
+        const updated = { ...attendance };
+        students.forEach(s => {
+            if (updated[s.id]?.status !== 'present') {
+                updated[s.id] = { status: 'present', marked_by: 'manual' };
+            }
+        });
         setAttendance(updated);
     };
 
     const markAllAbsent = () => {
-        const updated = {};
-        students.forEach(s => { updated[s.id] = 'absent'; });
+        const updated = { ...attendance };
+        students.forEach(s => {
+            if (updated[s.id]?.status !== 'absent') {
+                updated[s.id] = { status: 'absent', marked_by: 'manual' };
+            }
+        });
         setAttendance(updated);
     };
 
     const submitAttendance = async () => {
         setLoading(true);
         try {
-            const records = Object.entries(attendance).map(([student_id, status]) => ({
+            const records = Object.entries(attendance).map(([student_id, data]) => ({
                 student_id: parseInt(student_id),
-                status,
+                status: data.status,
             }));
             await api.post('/attendance/mark-bulk', { session_id: sessionId, records });
             toast.success('Attendance saved successfully!');
@@ -120,8 +134,8 @@ const MarkAttendance = () => {
         }
     };
 
-    const presentCount = Object.values(attendance).filter(v => v === 'present').length;
-    const absentCount = Object.values(attendance).filter(v => v === 'absent').length;
+    const presentCount = Object.values(attendance).filter(v => v.status === 'present').length;
+    const absentCount = Object.values(attendance).filter(v => v.status === 'absent').length;
 
     return (
         <>
@@ -193,14 +207,21 @@ const MarkAttendance = () => {
                                     {students.map((s, idx) => (
                                         <tr key={s.id} onClick={() => toggleAttendance(s.id)} style={{ cursor: 'pointer' }}>
                                             <td>{idx + 1}</td>
-                                            <td><strong>{s.name}</strong></td>
+                                            <td>
+                                                <strong>{s.name}</strong>
+                                                {attendance[s.id]?.marked_by !== 'manual' && attendance[s.id]?.status === 'present' && (
+                                                    <span style={{ marginLeft: 8, fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'var(--text-primary)', color: 'var(--bg-primary)' }}>
+                                                        {attendance[s.id]?.marked_by}
+                                                    </span>
+                                                )}
+                                            </td>
                                             <td>{s.enrollment_no || '-'}</td>
                                             <td>
                                                 <span
-                                                    className={`badge ${attendance[s.id] === 'present' ? 'badge-present' : 'badge-absent'}`}
+                                                    className={`badge ${attendance[s.id]?.status === 'present' ? 'badge-present' : 'badge-absent'}`}
                                                     style={{ cursor: 'pointer', minWidth: 70, justifyContent: 'center' }}
                                                 >
-                                                    {attendance[s.id] === 'present' ? 'Present' : 'Absent'}
+                                                    {attendance[s.id]?.status === 'present' ? 'Present' : 'Absent'}
                                                 </span>
                                             </td>
                                         </tr>

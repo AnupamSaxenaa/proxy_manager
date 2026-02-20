@@ -126,4 +126,23 @@ const getAllDepartments = async (req, res) => {
     }
 };
 
-module.exports = { listUsers, getUserById, updateUser, deactivateUser, activateUser, getAllDepartments };
+const getFacultyStudents = async (req, res) => {
+    try {
+        const query = `
+            SELECT DISTINCT u.id, u.name, u.email, u.enrollment_no, u.section, u.sub_section, d.name as department_name
+            FROM users u
+            JOIN student_classes sc ON u.id = sc.student_id
+            JOIN classes c ON sc.class_id = c.id
+            LEFT JOIN departments d ON u.department_id = d.id
+            WHERE c.faculty_id = ? AND u.role = 'student'
+            ORDER BY u.name
+        `;
+        const [students] = await pool.query(query, [req.user.id]);
+        res.json({ students });
+    } catch (error) {
+        console.error('Failed to fetch faculty students:', error);
+        res.status(500).json({ error: 'Failed to fetch students' });
+    }
+};
+
+module.exports = { listUsers, getUserById, updateUser, deactivateUser, activateUser, getAllDepartments, getFacultyStudents };

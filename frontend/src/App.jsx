@@ -23,6 +23,7 @@ import LandingPage from './pages/LandingPage';
 import ManageClasses from './pages/ManageClasses';
 import ManageUsers from './pages/ManageUsers';
 import Calendar from './pages/Calendar';
+import FacultyStudents from './pages/FacultyStudents';
 import './index.css';
 
 const ProtectedRoute = ({ children, roles }) => {
@@ -110,6 +111,7 @@ function App() {
               <Route path="users" element={<ProtectedRoute roles={['admin']}><ManageUsers /></ProtectedRoute>} />
               <Route path="at-risk" element={<ProtectedRoute roles={['faculty', 'admin']}><AtRiskStudents /></ProtectedRoute>} />
               <Route path="manage-classes" element={<ProtectedRoute roles={['admin']}><ManageClasses /></ProtectedRoute>} />
+              <Route path="students" element={<ProtectedRoute roles={['faculty', 'admin']}><FacultyStudents /></ProtectedRoute>} />
 
               <Route path="analytics" element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>} />
             </Route>

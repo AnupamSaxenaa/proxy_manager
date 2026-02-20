@@ -143,7 +143,13 @@ const createSession = async (req, res) => {
         const { session_date, topic } = req.body;
         const classId = req.params.id;
 
-        const date = session_date || new Date().toISOString().split('T')[0];
+        const istNow = new Date(Date.now() + (5.5 * 60 * 60 * 1000));
+        const todayIST = istNow.toISOString().split('T')[0];
+        const date = session_date || todayIST;
+
+        if (date !== todayIST) {
+            return res.status(403).json({ error: 'Attendance can only be managed on the exact day of the scheduled class. You cannot create sessions for past or future dates.' });
+        }
 
         const [result] = await pool.query(
             'INSERT INTO class_sessions (class_id, session_date, topic, status) VALUES (?, ?, ?, ?)',
@@ -153,9 +159,13 @@ const createSession = async (req, res) => {
         res.status(201).json({ message: 'Session created.', sessionId: result.insertId });
     } catch (error) {
         if (error.code === 'ER_DUP_ENTRY') {
+            const istNow = new Date(Date.now() + (5.5 * 60 * 60 * 1000));
+            const todayIST = istNow.toISOString().split('T')[0];
+            const date = req.body.session_date || todayIST;
+
             const [existing] = await pool.query(
                 'SELECT * FROM class_sessions WHERE class_id = ? AND session_date = ?',
-                [req.params.id, req.body.session_date || new Date().toISOString().split('T')[0]]
+                [req.params.id, date]
             );
             return res.json({ message: 'Session already exists.', sessionId: existing[0]?.id });
         }

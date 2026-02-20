@@ -192,6 +192,7 @@ const Layout = () => {
                 { to: '/dashboard/generate-qr', icon: <IconQrCode />, label: 'Generate QR' },
                 { to: '/dashboard/mark-attendance', icon: <IconClipboard />, label: 'Mark Attendance' },
                 { to: '/dashboard/my-classes', icon: <IconBook />, label: 'My Classes' },
+                { to: '/dashboard/students', icon: <IconUsers />, label: 'My Students' },
                 { to: '/dashboard/class-analytics', icon: <IconChart />, label: 'Class Analytics' },
                 { to: '/dashboard/at-risk', icon: <IconWarning />, label: 'At-Risk Students' },
                 { to: '/dashboard/calendar', icon: <IconCalendar />, label: 'Calendar' },
