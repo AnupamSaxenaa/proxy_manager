@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Classiq</string>
+    <string name="title_activity_main">Classiq</string>
+    <string name="package_name">com.classiq.smartattendance</string>
+    <string name="custom_url_scheme">com.classiq.smartattendance</string>
+</resources>

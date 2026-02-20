@@ -22,6 +22,7 @@ import AtRiskStudents from './pages/AtRiskStudents';
 import LandingPage from './pages/LandingPage';
 import ManageClasses from './pages/ManageClasses';
 import ManageUsers from './pages/ManageUsers';
+import Calendar from './pages/Calendar';
 import './index.css';
 
 const ProtectedRoute = ({ children, roles }) => {
@@ -104,6 +105,7 @@ function App() {
               <Route path="class-analytics" element={<ProtectedRoute roles={['faculty', 'admin']}><AtRiskStudents /></ProtectedRoute>} />
 
               <Route path="my-classes" element={<MyClasses />} />
+              <Route path="calendar" element={<Calendar />} />
               <Route path="notifications" element={<Notifications />} />
               <Route path="users" element={<ProtectedRoute roles={['admin']}><ManageUsers /></ProtectedRoute>} />
               <Route path="at-risk" element={<ProtectedRoute roles={['faculty', 'admin']}><AtRiskStudents /></ProtectedRoute>} />

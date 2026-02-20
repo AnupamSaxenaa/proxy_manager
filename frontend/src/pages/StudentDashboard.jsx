@@ -9,7 +9,7 @@ import {
     PieChart, Pie, Cell, LineChart, Line,
 } from 'recharts';
 
-const COLORS = ['#6366f1', '#22d3ee', '#22c55e', '#f59e0b', '#ef4444'];
+const COLORS = ['var(--text-primary)', 'var(--text-secondary)', 'var(--text-muted)', 'var(--border-color)', '#000000'];
 
 const IconChart = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -76,9 +76,7 @@ const StudentDashboard = () => {
     }, []);
 
     const getPercentageColor = (pct) => {
-        if (pct >= 75) return 'green';
-        if (pct >= 50) return 'yellow';
-        return 'red';
+        return 'monochrome';
     };
 
     if (loading) {
@@ -117,21 +115,21 @@ const StudentDashboard = () => {
             <div className="page-content fade-in">
                 <div className="stats-grid">
                     <div className="stat-card">
-                        <div className="stat-icon purple"><IconChart /></div>
+                        <div className="stat-icon"><IconChart /></div>
                         <div>
                             <div className="stat-value">{overall.percentage || 0}%</div>
                             <div className="stat-label">Overall Attendance</div>
                             <div className="progress-bar" style={{ marginTop: 8, width: '100%', maxWidth: 120 }}>
                                 <div
-                                    className={`progress-fill ${getPercentageColor(overall.percentage)}`}
-                                    style={{ width: `${overall.percentage || 0}%` }}
+                                    className="progress-fill"
+                                    style={{ width: `${overall.percentage || 0}%`, background: 'var(--text-primary)' }}
                                 />
                             </div>
                         </div>
                     </div>
 
                     <div className="stat-card">
-                        <div className="stat-icon green"><IconClipboard /></div>
+                        <div className="stat-icon"><IconClipboard /></div>
                         <div>
                             <div className="stat-value">{overall.present || 0}</div>
                             <div className="stat-label">Classes Attended</div>
@@ -139,7 +137,7 @@ const StudentDashboard = () => {
                     </div>
 
                     <div className="stat-card">
-                        <div className="stat-icon red"><IconWarning /></div>
+                        <div className="stat-icon"><IconWarning /></div>
                         <div>
                             <div className="stat-value">{overall.absent || 0}</div>
                             <div className="stat-label">Classes Missed</div>
@@ -147,7 +145,7 @@ const StudentDashboard = () => {
                     </div>
 
                     <div className="stat-card">
-                        <div className="stat-icon cyan"><IconBook /></div>
+                        <div className="stat-icon"><IconBook /></div>
                         <div>
                             <div className="stat-value">{overall.total_classes || 0}</div>
                             <div className="stat-label">Total Classes</div>
@@ -164,10 +162,10 @@ const StudentDashboard = () => {
                                 return (order[a.computed_status] ?? 1) - (order[b.computed_status] ?? 1);
                             }).map(s => {
                                 const sc = {
-                                    ongoing: { bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.35)', dot: '#22c55e', label: 'Ongoing' },
-                                    upcoming: { bg: 'rgba(99,102,241,0.10)', border: 'rgba(99,102,241,0.30)', dot: '#6366f1', label: 'Upcoming' },
-                                    completed: { bg: 'rgba(148,163,184,0.10)', border: 'rgba(148,163,184,0.25)', dot: '#94a3b8', label: 'Completed' },
-                                }[s.computed_status] || { bg: 'transparent', border: 'var(--border-color)', dot: '#94a3b8', label: s.computed_status };
+                                    ongoing: { bg: 'var(--bg-input)', border: 'var(--text-primary)', dot: 'var(--text-primary)', label: 'Ongoing' },
+                                    upcoming: { bg: 'rgba(0,0,0,0.02)', border: 'var(--border-color)', dot: 'var(--text-secondary)', label: 'Upcoming' },
+                                    completed: { bg: 'transparent', border: 'var(--border-color)', dot: 'var(--text-muted)', label: 'Completed' },
+                                }[s.computed_status] || { bg: 'transparent', border: 'var(--border-color)', dot: 'var(--text-muted)', label: s.computed_status };
 
                                 return (
                                     <div key={s.session_id} style={{
@@ -201,7 +199,7 @@ const StudentDashboard = () => {
 
                                         {s.student_present > 0 ? (
                                             <div style={{ fontSize: 13, fontWeight: 500 }}>
-                                                <span style={{ color: '#22c55e' }}>✓ Attendance Marked</span>
+                                                <span style={{ color: 'var(--text-primary)' }}>✓ Attendance Marked</span>
                                             </div>
                                         ) : s.computed_status === 'ongoing' && (
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
@@ -250,7 +248,7 @@ const StudentDashboard = () => {
                                     <XAxis dataKey="week_start" stroke="var(--text-muted)" tick={{ fontSize: 12 }} />
                                     <YAxis stroke="var(--text-muted)" tick={{ fontSize: 12 }} domain={[0, 100]} />
                                     <Tooltip {...tooltipStyle} />
-                                    <Line type="monotone" dataKey="percentage" stroke="#6366f1" strokeWidth={3} dot={{ fill: '#6366f1', r: 5 }} />
+                                    <Line type="monotone" dataKey="percentage" stroke="var(--text-primary)" strokeWidth={3} dot={{ fill: 'var(--bg-primary)', stroke: 'var(--text-primary)', r: 5 }} />
                                 </LineChart>
                             </ResponsiveContainer>
                         ) : (
@@ -302,7 +300,7 @@ const StudentDashboard = () => {
                                 <XAxis dataKey="course_code" stroke="var(--text-muted)" tick={{ fontSize: 12 }} />
                                 <YAxis stroke="var(--text-muted)" tick={{ fontSize: 12 }} domain={[0, 100]} />
                                 <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 8 }} />
-                                <Bar dataKey="percentage" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                                <Bar dataKey="percentage" fill="var(--text-primary)" radius={[6, 6, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>

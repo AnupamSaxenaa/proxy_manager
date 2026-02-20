@@ -62,9 +62,9 @@ const EmptyCalendarIcon = () => (
 );
 
 const statusColors = {
-    ongoing: { bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.35)', dot: '#22c55e', label: 'Ongoing' },
-    upcoming: { bg: 'rgba(99,102,241,0.10)', border: 'rgba(99,102,241,0.30)', dot: '#6366f1', label: 'Upcoming' },
-    completed: { bg: 'rgba(148,163,184,0.10)', border: 'rgba(148,163,184,0.25)', dot: '#94a3b8', label: 'Completed' },
+    ongoing: { bg: 'var(--bg-input)', border: 'var(--text-primary)', dot: 'var(--text-primary)', label: 'Ongoing' },
+    upcoming: { bg: 'rgba(0,0,0,0.02)', border: 'var(--border-color)', dot: 'var(--text-secondary)', label: 'Upcoming' },
+    completed: { bg: 'transparent', border: 'var(--border-color)', dot: 'var(--text-muted)', label: 'Completed' },
 };
 
 const SessionCard = ({ session, navigate }) => {
@@ -181,21 +181,21 @@ const FacultyDashboard = () => {
             <div className="page-content fade-in">
                 <div className="stats-grid">
                     <div className="stat-card">
-                        <div className="stat-icon purple"><IconBook /></div>
+                        <div className="stat-icon"><IconBook /></div>
                         <div>
                             <div className="stat-value">{classCount}</div>
                             <div className="stat-label">Active Classes</div>
                         </div>
                     </div>
                     <div className="stat-card">
-                        <div className="stat-icon cyan"><IconClipboard /></div>
+                        <div className="stat-icon"><IconClipboard /></div>
                         <div>
                             <div className="stat-value">{sessions.length}</div>
                             <div className="stat-label">Today's Sessions</div>
                         </div>
                     </div>
                     <div className="stat-card">
-                        <div className="stat-icon green"><IconUsers /></div>
+                        <div className="stat-icon"><IconUsers /></div>
                         <div>
                             <div className="stat-value">{totalStudents}</div>
                             <div className="stat-label">Total Students</div>

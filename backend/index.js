@@ -16,6 +16,7 @@ const notificationRoutes = require('./routes/notifications');
 const faceRoutes = require('./routes/face');
 const windowRoutes = require('./routes/attendanceWindow');
 const aiRoutes = require('./routes/ai');
+const calendarRoutes = require('./routes/calendar');
 
 const app = express();
 
@@ -62,6 +63,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/face', faceRoutes);
 app.use('/api/attendance-window', windowRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/calendar', calendarRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });

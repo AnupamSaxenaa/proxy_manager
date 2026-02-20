@@ -55,26 +55,29 @@ const getStudentAnalytics = async (req, res) => {
 
         const [overall] = await pool.query(
             `SELECT
-         COUNT(*) as total_classes,
+         COUNT(cs.id) as total_classes,
          COUNT(CASE WHEN ar.status = 'present' THEN 1 END) as present,
-         COUNT(CASE WHEN ar.status = 'absent' THEN 1 END) as absent,
          COUNT(CASE WHEN ar.status = 'late' THEN 1 END) as late,
-         ROUND(COUNT(CASE WHEN ar.status = 'present' OR ar.status = 'late' THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0), 1) as percentage
-        FROM attendance_records ar
-        WHERE ar.student_id = ?`,
+         (COUNT(cs.id) - COUNT(CASE WHEN ar.status IN ('present', 'late', 'excused') THEN 1 END)) as absent,
+         ROUND(COUNT(CASE WHEN ar.status = 'present' OR ar.status = 'late' THEN 1 END) * 100.0 / NULLIF(COUNT(cs.id), 0), 1) as percentage
+        FROM student_classes sc
+        JOIN class_sessions cs ON sc.class_id = cs.class_id
+        LEFT JOIN attendance_records ar ON ar.session_id = cs.id AND ar.student_id = sc.student_id
+        WHERE sc.student_id = ?`,
             [studentId]
         );
 
         const [courseWise] = await pool.query(
             `SELECT co.name as course_name, co.code as course_code,
-              COUNT(*) as total_sessions,
+              COUNT(cs.id) as total_sessions,
               COUNT(CASE WHEN ar.status = 'present' THEN 1 END) as present,
-              ROUND(COUNT(CASE WHEN ar.status = 'present' OR ar.status = 'late' THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0), 1) as percentage
-       FROM attendance_records ar
-       JOIN class_sessions cs ON ar.session_id = cs.id
-       JOIN classes c ON cs.class_id = c.id
+              ROUND(COUNT(CASE WHEN ar.status = 'present' OR ar.status = 'late' THEN 1 END) * 100.0 / NULLIF(COUNT(cs.id), 0), 1) as percentage
+       FROM student_classes sc
+       JOIN classes c ON sc.class_id = c.id
        JOIN courses co ON c.course_id = co.id
-       WHERE ar.student_id = ?
+       LEFT JOIN class_sessions cs ON cs.class_id = c.id
+       LEFT JOIN attendance_records ar ON ar.session_id = cs.id AND ar.student_id = sc.student_id
+       WHERE sc.student_id = ?
        GROUP BY co.id, co.name, co.code
        ORDER BY percentage ASC`,
             [studentId]
@@ -84,12 +87,13 @@ const getStudentAnalytics = async (req, res) => {
             `SELECT
          YEARWEEK(cs.session_date, 1) as week,
          MIN(cs.session_date) as week_start,
-         COUNT(*) as total,
+         COUNT(cs.id) as total,
          COUNT(CASE WHEN ar.status = 'present' THEN 1 END) as present,
-         ROUND(COUNT(CASE WHEN ar.status = 'present' OR ar.status = 'late' THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0), 1) as percentage
-        FROM attendance_records ar
-        JOIN class_sessions cs ON ar.session_id = cs.id
-        WHERE ar.student_id = ?
+         ROUND(COUNT(CASE WHEN ar.status = 'present' OR ar.status = 'late' THEN 1 END) * 100.0 / NULLIF(COUNT(cs.id), 0), 1) as percentage
+        FROM student_classes sc
+        JOIN class_sessions cs ON sc.class_id = cs.class_id
+        LEFT JOIN attendance_records ar ON ar.session_id = cs.id AND ar.student_id = sc.student_id
+        WHERE sc.student_id = ?
         GROUP BY YEARWEEK(cs.session_date, 1)
         ORDER BY week DESC
         LIMIT 8`,

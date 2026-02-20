@@ -1,0 +1,9 @@
+{
+  "appId": "com.classiq.smartattendance",
+  "appName": "Classiq",
+  "webDir": "dist",
+  "server": {
+    "url": "https://classiqproxymanager.netlify.app",
+    "cleartext": true
+  }
+}

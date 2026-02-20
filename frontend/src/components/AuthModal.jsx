@@ -137,6 +137,7 @@ const AuthModal = ({ open, tab: initialTab = 'login', onClose }) => {
     const [regData, setRegData] = useState({
         name: '', email: '', password: '', confirmPassword: '',
         role: 'student', department_id: '', enrollment_no: '', phone: '',
+        section: '', sub_section: '',
     });
 
     const roleOptions = {
@@ -396,10 +397,22 @@ const AuthModal = ({ open, tab: initialTab = 'login', onClose }) => {
                                     </div>
                                 </div>
                                 {regData.role === 'student' && (
-                                    <div>
-                                        <label style={labelStyle}>Enrollment Number</label>
-                                        <InputField type="text" placeholder="Enter your enrollment number" value={regData.enrollment_no} onChange={e => setRegData({ ...regData, enrollment_no: e.target.value })} />
-                                    </div>
+                                    <>
+                                        <div>
+                                            <label style={labelStyle}>Enrollment Number</label>
+                                            <InputField type="text" placeholder="Enter your enrollment number" value={regData.enrollment_no} onChange={e => setRegData({ ...regData, enrollment_no: e.target.value })} />
+                                        </div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                                            <div>
+                                                <label style={labelStyle}>Section</label>
+                                                <InputField type="text" placeholder="e.g., A" value={regData.section} onChange={e => setRegData({ ...regData, section: e.target.value.toUpperCase() })} />
+                                            </div>
+                                            <div>
+                                                <label style={labelStyle}>Sub-Section</label>
+                                                <InputField type="text" placeholder="e.g., G1" value={regData.sub_section} onChange={e => setRegData({ ...regData, sub_section: e.target.value.toUpperCase() })} />
+                                            </div>
+                                        </div>
+                                    </>
                                 )}
                                 <div>
                                     <label style={labelStyle}>Phone</label>

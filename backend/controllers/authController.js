@@ -4,7 +4,7 @@ const { pool } = require('../config/db');
 
 const register = async (req, res) => {
     try {
-        const { name, email, password, role, department_id, enrollment_no, phone } = req.body;
+        const { name, email, password, role, department_id, enrollment_no, phone, section, sub_section } = req.body;
 
         if (!name || !email || !password) {
             return res.status(400).json({ error: 'Name, email, and password are required.' });
@@ -30,9 +30,9 @@ const register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const [result] = await pool.query(
-            `INSERT INTO users (name, email, password, role, department_id, enrollment_no, phone)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [name, email, hashedPassword, role || 'student', department_id || null, enrollment_no || null, phone || null]
+            `INSERT INTO users (name, email, password, role, department_id, enrollment_no, phone, section, sub_section)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [name, email, hashedPassword, role || 'student', department_id || null, enrollment_no || null, phone || null, section || null, sub_section || null]
         );
 
         const token = jwt.sign(
@@ -42,7 +42,7 @@ const register = async (req, res) => {
         );
 
         const [user] = await pool.query(
-            'SELECT id, name, email, role, department_id, enrollment_no, phone, created_at FROM users WHERE id = ?',
+            'SELECT id, name, email, role, department_id, enrollment_no, phone, section, sub_section, created_at FROM users WHERE id = ?',
             [result.insertId]
         );
 
@@ -103,7 +103,7 @@ const login = async (req, res) => {
 const getMe = async (req, res) => {
     try {
         const [users] = await pool.query(
-            `SELECT u.id, u.name, u.email, u.role, u.department_id, u.enrollment_no, u.phone, u.avatar, u.created_at,
+            `SELECT u.id, u.name, u.email, u.role, u.department_id, u.enrollment_no, u.phone, u.avatar, u.section, u.sub_section, u.created_at,
               d.name as department_name, d.code as department_code
        FROM users u
        LEFT JOIN departments d ON u.department_id = d.id
