@@ -9,6 +9,7 @@ const {
     createCourse,
     createSession,
     getTodaySessions,
+    getHistoricalSessions,
     getSessionsByClass,
     deleteClass,
     clearClasses,
@@ -21,6 +22,7 @@ const {
 const router = express.Router();
 
 router.get('/sessions/today', authenticate, getTodaySessions);
+router.get('/sessions/historical', authenticate, requireRole('admin', 'faculty'), getHistoricalSessions);
 router.get('/courses/all', authenticate, getAllCourses);
 router.delete('/courses', authenticate, requireRole('admin'), clearCourses);
 router.post('/courses', authenticate, requireRole('admin'), createCourse);

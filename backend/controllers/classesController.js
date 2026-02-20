@@ -271,7 +271,33 @@ const getTodaySessions = async (req, res) => {
         res.json({ sessions: enriched });
     } catch (error) {
         console.error('Get today sessions error:', error);
-        res.status(500).json({ error: 'Failed to fetch today sessions.' });
+        const today = istNow.toISOString().split('T')[0];
+
+        let query = `
+            SELECT cs.id as session_id, cs.session_date, cs.topic,
+                   c.start_time, c.end_time, c.room_no, c.section, c.course_id,
+                   co.name as course_name, co.code as course_code,
+                   (SELECT COUNT(*) FROM attendance_records ar WHERE ar.session_id = cs.id AND ar.status = 'present') as present_count,
+                   (SELECT COUNT(*) FROM student_classes WHERE class_id = c.id) as total_students
+            FROM class_sessions cs
+            JOIN classes c ON cs.class_id = c.id
+            JOIN courses co ON c.course_id = co.id
+            WHERE cs.session_date < ?
+        `;
+        const params = [today];
+
+        if (req.user.role === 'faculty') {
+            query += ' AND c.faculty_id = ?';
+            params.push(req.user.id);
+        }
+
+        query += ' ORDER BY cs.session_date DESC, c.start_time DESC LIMIT 100';
+
+        const [history] = await pool.query(query, params);
+        res.json({ history });
+    } catch (error) {
+        console.error('Get historical sessions error:', error);
+        res.status(500).json({ error: 'Failed to fetch historical sessions.' });
     }
 };
 

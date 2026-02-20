@@ -35,39 +35,48 @@ const IconSave = () => (
 
 const MarkAttendance = () => {
     const { user } = useAuth();
-    const [classes, setClasses] = useState([]);
-    const [selectedClass, setSelectedClass] = useState('');
-    const [sessionId, setSessionId] = useState(null);
-    const [students, setStudents] = useState([]);
-    const [attendance, setAttendance] = useState({}); // { 1: { status: 'present', marked_by: 'facial' } }
-    const [loading, setLoading] = useState(false);
-
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [todayClasses, setTodayClasses] = useState([]);
+    const [historicalClasses, setHistoricalClasses] = useState([]);
 
     useEffect(() => {
-        const fetchClassesForDate = async () => {
+        const fetchSchedule = async () => {
             try {
-                const res = await api.get(`/classes/sessions/today?date=${selectedDate}`);
-                setClasses(res.data.sessions || []);
+                const [todayRes, histRes] = await Promise.all([
+                    api.get('/classes/sessions/today'),
+                    api.get('/classes/sessions/historical')
+                ]);
+                setTodayClasses(todayRes.data.sessions || []);
+                setHistoricalClasses(histRes.data.history || []);
                 setSelectedClass('');
             } catch {
-                toast.error('Failed to load schedule for date');
+                toast.error('Failed to load schedule');
             }
         };
-        fetchClassesForDate();
-    }, [selectedDate]);
+        fetchSchedule();
+    }, []);
 
-    const startSession = async () => {
-        if (!selectedClass) return;
+    // Group historical classes by Month YYYY
+    const groupedHistory = historicalClasses.reduce((acc, session) => {
+        const d = new Date(session.session_date);
+        const monthYear = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        if (!acc[monthYear]) acc[monthYear] = [];
+        acc[monthYear].push(session);
+        return acc;
+    }, {});
+
+    const startSession = async (classId, specificSessionId = null) => {
         try {
-            const sessionRes = await api.post(`/classes/${selectedClass}/session`, {
-                session_date: selectedDate
-            });
-            const sId = sessionRes.data.sessionId;
+            let sId = specificSessionId;
+            if (!sId) {
+                const sessionRes = await api.post(`/classes/${classId}/session`, {});
+                sId = sessionRes.data.sessionId;
+            }
+
             setSessionId(sId);
+            setSelectedClass(classId);
 
             const [studentRes, attendanceRes] = await Promise.all([
-                api.get(`/classes/${selectedClass}/students`),
+                api.get(`/classes/${classId}/students`),
                 api.get(`/attendance/session/${sId}`)
             ]);
 
@@ -148,36 +157,70 @@ const MarkAttendance = () => {
             </div>
             <div className="page-content fade-in">
                 {!sessionId ? (
-                    <div className="chart-card" style={{ maxWidth: 500 }}>
-                        <div className="chart-title">Select Class & Date</div>
-                        <div className="input-group">
-                            <label>Date</label>
-                            <input
-                                type="date"
-                                className="input-field"
-                                value={selectedDate}
-                                onChange={(e) => setSelectedDate(e.target.value)}
-                            />
-                        </div>
-                        <div className="input-group">
-                            <label>Class</label>
-                            <select className="input-field" value={selectedClass} onChange={e => setSelectedClass(e.target.value)}>
-                                <option value="">Choose a class...</option>
-                                {classes.map(c => (
-                                    <option key={c.class_id} value={c.class_id}>
-                                        {c.course_code} - {c.course_name} ({c.start_time})
-                                    </option>
+                    <div className="attendance-layout">
+                        <h2 className="section-title" style={{ marginTop: 0, fontSize: 18, marginBottom: 12 }}>Today's Classes</h2>
+                        {todayClasses.length === 0 ? (
+                            <div className="chart-card" style={{ padding: 24, textAlign: 'center', color: 'var(--text-muted)' }}>
+                                No classes scheduled for today.
+                            </div>
+                        ) : (
+                            <div className="horizontal-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 12 }}>
+                                {todayClasses.map(c => (
+                                    <div key={c.class_id} className="stat-card" style={{ minWidth: 200, cursor: 'pointer', border: '1px solid var(--border-color)' }} onClick={() => startSession(c.class_id, c.session_id)}>
+                                        <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 4 }}>{c.course_code}</div>
+                                        <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 12 }}>{c.course_name}</div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <span className="badge" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>{c.start_time} - {c.end_time}</span>
+                                        </div>
+                                    </div>
                                 ))}
-                            </select>
-                            {classes.length === 0 && (
-                                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>
-                                    No classes scheduled for this date.
-                                </div>
-                            )}
-                        </div>
-                        <button className="btn btn-primary" onClick={startSession} disabled={!selectedClass}>
-                            Load Attendance Roster
-                        </button>
+                            </div>
+                        )}
+
+                        <h2 className="section-title" style={{ marginTop: 32, fontSize: 18, marginBottom: 16 }}>Previous Classes Timeline</h2>
+                        {Object.keys(groupedHistory).length === 0 ? (
+                            <div className="chart-card" style={{ padding: 24, textAlign: 'center', color: 'var(--text-muted)' }}>
+                                No historical class sessions found.
+                            </div>
+                        ) : (
+                            <div className="timeline-container" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                                {Object.entries(groupedHistory).map(([monthYear, sessions]) => (
+                                    <div key={monthYear} className="timeline-month-group">
+                                        <h3 style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{monthYear}</h3>
+                                        <div className="horizontal-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 12 }}>
+                                            {sessions.map(s => {
+                                                const d = new Date(s.session_date);
+                                                const dayNum = d.getDate();
+                                                const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+
+                                                return (
+                                                    <div
+                                                        key={s.session_id}
+                                                        className="stat-card"
+                                                        style={{ minWidth: 160, padding: '12px 16px', cursor: 'pointer', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}
+                                                        onClick={() => startSession(s.class_id, s.session_id)}
+                                                    >
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                                                            <div>
+                                                                <div style={{ fontSize: 24, fontWeight: 'bold', lineHeight: 1 }}>{dayNum}</div>
+                                                                <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{dayName}</div>
+                                                            </div>
+                                                            <div style={{ fontSize: 11, background: 'var(--bg-secondary)', padding: '2px 6px', borderRadius: 4 }}>
+                                                                {s.start_time}
+                                                            </div>
+                                                        </div>
+                                                        <div style={{ fontWeight: 600, fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.course_code}</div>
+                                                        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 'auto', paddingTop: 8 }}>
+                                                            {s.present_count} / {s.total_students} Present
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <>

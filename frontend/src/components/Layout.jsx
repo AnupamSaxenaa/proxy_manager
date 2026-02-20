@@ -190,7 +190,7 @@ const Layout = () => {
                 ...common,
                 { to: '/dashboard/attendance-window', icon: <IconUsers />, label: 'Attendance Window' },
                 { to: '/dashboard/generate-qr', icon: <IconQrCode />, label: 'Generate QR' },
-                { to: '/dashboard/mark-attendance', icon: <IconClipboard />, label: 'Mark Attendance' },
+                { to: '/dashboard/mark-attendance', icon: <IconClipboard />, label: 'Manual Attendance' },
                 { to: '/dashboard/my-classes', icon: <IconBook />, label: 'My Classes' },
                 { to: '/dashboard/students', icon: <IconUsers />, label: 'My Students' },
                 { to: '/dashboard/class-analytics', icon: <IconChart />, label: 'Class Analytics' },
@@ -225,7 +225,7 @@ const Layout = () => {
                     <div className="sidebar-logo"><IconLogo /></div>
                     <div>
                         <div className="sidebar-title">Classiq</div>
-                        <div className="sidebar-subtitle">Smart Attendance</div>
+                        <h1 className="page-title gradient-text">Manual Attendance</h1>
                     </div>
                 </div>
 
