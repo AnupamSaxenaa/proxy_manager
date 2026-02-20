@@ -54,9 +54,7 @@ const QRGenerator = () => {
     const startSession = async () => {
         if (!selectedClass) return toast.error('Select a class first');
         try {
-            const res = await api.post(`/classes/${selectedClass}/session`, {
-                session_date: new Date().toISOString().split('T')[0],
-            });
+            const res = await api.post(`/classes/${selectedClass}/session`, {});
             setSessionId(res.data.sessionId);
             toast.success('Session started!');
         } catch {

@@ -12,7 +12,13 @@ const AttendanceWindow = () => {
     const [method, setMethod] = useState('face');
     const [duration, setDuration] = useState(10);
     const [customDuration, setCustomDuration] = useState(false);
+    const [now, setNow] = useState(Date.now());
     const timerRefs = useRef({});
+
+    useEffect(() => {
+        const tick = setInterval(() => setNow(Date.now()), 1000);
+        return () => clearInterval(tick);
+    }, []);
 
     useEffect(() => {
         fetchSessions();
@@ -20,6 +26,27 @@ const AttendanceWindow = () => {
             Object.values(timerRefs.current).forEach(clearInterval);
         };
     }, []);
+
+    // Auto-hide expired windows exactly when the countdown hits zero
+    useEffect(() => {
+        let changed = false;
+        const nextActive = { ...activeWindows };
+        Object.entries(nextActive).forEach(([sessionId, windowData]) => {
+            if (windowData.closes_at) {
+                const diff = new Date(windowData.closes_at) - now;
+                if (diff <= 0) {
+                    delete nextActive[sessionId];
+                    changed = true;
+                    if (timerRefs.current[sessionId]) {
+                        clearInterval(timerRefs.current[sessionId]);
+                    }
+                }
+            }
+        });
+        if (changed) {
+            setActiveWindows(nextActive);
+        }
+    }, [now, activeWindows]);
 
     const fetchSessions = async () => {
         try {
@@ -120,7 +147,7 @@ const AttendanceWindow = () => {
 
     const formatTimeRemaining = (closesAt) => {
         if (!closesAt) return 'Manual close';
-        const diff = new Date(closesAt) - new Date();
+        const diff = new Date(closesAt) - now;
         if (diff <= 0) return 'Expired';
         const mins = Math.floor(diff / 60000);
         const secs = Math.floor((diff % 60000) / 1000);

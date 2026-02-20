@@ -28,25 +28,31 @@ const openWindow = async (req, res) => {
             [session_id]
         );
 
-        const opensAt = new Date();
-        let closesAt = null;
-
-        if (duration_minutes && duration_minutes > 0) {
-            closesAt = new Date(Date.now() + duration_minutes * 60 * 1000);
-        }
+        const durationVal = duration_minutes && duration_minutes > 0 ? duration_minutes : null;
 
         const [result] = await pool.query(
             `INSERT INTO attendance_windows (session_id, opened_by, method, opens_at, closes_at, is_active, allowed_network)
-             VALUES (?, ?, ?, ?, ?, TRUE, ?)`,
-            [session_id, req.user.id, method, opensAt, closesAt, allowed_network || null]
+             VALUES (?, ?, ?, UTC_TIMESTAMP(), IF(? IS NOT NULL, DATE_ADD(UTC_TIMESTAMP(), INTERVAL ? MINUTE), NULL), TRUE, ?)`,
+            [session_id, req.user.id, method, durationVal, durationVal, allowed_network || null]
         );
+
+        // Fetch back the created row to return the correct DB computed timestamps
+        const [newWindow] = await pool.query(
+            'SELECT opens_at, closes_at FROM attendance_windows WHERE id = ?',
+            [result.insertId]
+        );
+
+        const formatUTC = (val) => {
+            if (!val) return null;
+            return typeof val === 'string' && !val.endsWith('Z') ? val.replace(' ', 'T') + 'Z' : val;
+        };
 
         res.json({
             message: 'Attendance window opened!',
             window_id: result.insertId,
             method,
-            opens_at: opensAt,
-            closes_at: closesAt,
+            opens_at: formatUTC(newWindow[0].opens_at),
+            closes_at: formatUTC(newWindow[0].closes_at),
             duration_minutes: duration_minutes || 'manual',
         });
     } catch (error) {
@@ -65,7 +71,7 @@ const closeWindow = async (req, res) => {
 
         const [updated] = await pool.query(
             `UPDATE attendance_windows
-             SET is_active = FALSE, closes_at = NOW()
+             SET is_active = FALSE, closes_at = UTC_TIMESTAMP()
              WHERE session_id = ? AND is_active = TRUE`,
             [session_id]
         );
@@ -90,7 +96,7 @@ const getWindowStatus = async (req, res) => {
              FROM attendance_windows aw
              JOIN users u ON aw.opened_by = u.id
              WHERE aw.session_id = ? AND aw.is_active = TRUE
-             AND (aw.closes_at IS NULL OR aw.closes_at > NOW())
+             AND (aw.closes_at IS NULL OR aw.closes_at > UTC_TIMESTAMP())
              ORDER BY aw.created_at DESC LIMIT 1`,
             [sessionId]
         );
@@ -120,13 +126,18 @@ const getWindowStatus = async (req, res) => {
             totalStudents = count[0].total;
         }
 
+        const formatUTC = (val) => {
+            if (!val) return null;
+            return typeof val === 'string' && !val.endsWith('Z') ? val.replace(' ', 'T') + 'Z' : val;
+        };
+
         res.json({
             active: true,
             window: {
                 id: window.id,
                 method: window.method,
-                opens_at: window.opens_at,
-                closes_at: window.closes_at,
+                opens_at: formatUTC(window.opens_at),
+                closes_at: formatUTC(window.closes_at),
                 allowed_network: window.allowed_network,
                 opened_by: window.opened_by_name,
             },
