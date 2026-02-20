@@ -296,6 +296,16 @@ body::before {
   transform: translateY(-1px);
 }
 
+.btn-outline {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-outline:not(:disabled):hover {
+  background: var(--bg-input);
+}
+
 .btn-success {
   background: rgba(52, 199, 89, 0.88);
   color: #fff;
