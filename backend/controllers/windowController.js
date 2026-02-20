@@ -5,7 +5,7 @@ const openWindow = async (req, res) => {
         const { session_id, method = 'face', duration_minutes, allowed_network } = req.body;
 
         if (!session_id) {
-            return res.status(400).json({ error: 'Session ID is required.' });
+            return res.status(400).json({ error: 'session id required : ' });
         }
 
         const [session] = await pool.query(
