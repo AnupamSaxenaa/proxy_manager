@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
@@ -39,6 +39,22 @@ const IconAlert = () => (
     </svg>
 );
 
+const IconEye = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+        <circle cx="12" cy="12" r="3" />
+    </svg>
+);
+
+const IconEyeOff = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+        <line x1="1" y1="1" x2="23" y2="23" />
+        <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+    </svg>
+);
+
 const IconArrow = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
         <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
@@ -52,7 +68,7 @@ const ClassiqMark = () => (
     </svg>
 );
 
-const InputField = ({ icon, ...props }) => (
+const InputField = ({ icon, showToggle, onToggle, isVisible, ...props }) => (
     <div style={{ position: 'relative' }}>
         {icon && (
             <span style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', display: 'flex', pointerEvents: 'none' }}>
@@ -63,7 +79,7 @@ const InputField = ({ icon, ...props }) => (
             {...props}
             style={{
                 width: '100%',
-                padding: icon ? '11px 14px 11px 40px' : '11px 14px',
+                padding: icon ? (showToggle ? '11px 40px 11px 40px' : '11px 14px 11px 40px') : '11px 14px',
                 background: 'var(--bg-primary)',
                 border: '1px solid var(--border-color)',
                 borderRadius: 10,
@@ -78,6 +94,11 @@ const InputField = ({ icon, ...props }) => (
             onFocus={e => e.target.style.borderColor = 'var(--text-secondary)'}
             onBlur={e => e.target.style.borderColor = 'var(--border-color)'}
         />
+        {showToggle && (
+            <button type="button" onClick={onToggle} style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', padding: 4 }}>
+                {isVisible ? <IconEyeOff /> : <IconEye />}
+            </button>
+        )}
     </div>
 );
 
@@ -110,20 +131,22 @@ const AuthModal = ({ open, tab: initialTab = 'login', onClose }) => {
 
     const [loginData, setLoginData] = useState({ email: '', password: '' });
     const [selectedRole, setSelectedRole] = useState(null);
+    const [showLoginPw, setShowLoginPw] = useState(false);
+    const [showRegPw, setShowRegPw] = useState(false);
+    const [showRegConfirmPw, setShowRegConfirmPw] = useState(false);
     const [regData, setRegData] = useState({
         name: '', email: '', password: '', confirmPassword: '',
         role: 'student', department_id: '', enrollment_no: '', phone: '',
     });
 
-    const roleCreds = {
-        admin: { email: 'aadmin@gmail.com', password: 'admin123', label: 'Admin' },
-        faculty: { email: 'rahul.makkar@iiitk.ac.in', password: 'faculty123', label: 'Faculty' },
-        student: { email: '', password: '', label: 'Student' },
+    const roleOptions = {
+        faculty: { label: 'Faculty' },
+        student: { label: 'Student' },
     };
 
     const selectRole = (role) => {
         setSelectedRole(role);
-        setLoginData({ email: roleCreds[role].email, password: roleCreds[role].password });
+        setLoginData({ email: '', password: '' });
         setError('');
     };
 
@@ -253,7 +276,7 @@ const AuthModal = ({ open, tab: initialTab = 'login', onClose }) => {
                             </div>
 
                             <div style={{ display: 'flex', gap: 8, marginBottom: 18 }}>
-                                {Object.entries(roleCreds).map(([role, cred]) => {
+                                {Object.entries(roleOptions).map(([role, opt]) => {
                                     const active = selectedRole === role;
                                     return (
                                         <button
@@ -274,11 +297,6 @@ const AuthModal = ({ open, tab: initialTab = 'login', onClose }) => {
                                                 transition: 'all 0.2s ease',
                                             }}
                                         >
-                                            {role === 'admin' && (
-                                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                                                </svg>
-                                            )}
                                             {role === 'faculty' && (
                                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                                                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -293,7 +311,7 @@ const AuthModal = ({ open, tab: initialTab = 'login', onClose }) => {
                                                     <path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5" />
                                                 </svg>
                                             )}
-                                            {cred.label}
+                                            {opt.label}
                                         </button>
                                     );
                                 })}
@@ -309,11 +327,11 @@ const AuthModal = ({ open, tab: initialTab = 'login', onClose }) => {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                                 <div>
                                     <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email</label>
-                                    <InputField icon={<IconMail />} type="email" placeholder="your@email.com" value={loginData.email} onChange={e => setLoginData({ ...loginData, email: e.target.value })} required />
+                                    <InputField icon={<IconMail />} type="email" placeholder="Enter your email" value={loginData.email} onChange={e => setLoginData({ ...loginData, email: e.target.value })} required />
                                 </div>
                                 <div>
                                     <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Password</label>
-                                    <InputField icon={<IconLock />} type="password" placeholder="Your password" value={loginData.password} onChange={e => setLoginData({ ...loginData, password: e.target.value })} required />
+                                    <InputField icon={<IconLock />} type={showLoginPw ? 'text' : 'password'} placeholder="Enter your password" value={loginData.password} onChange={e => setLoginData({ ...loginData, password: e.target.value })} required showToggle onToggle={() => setShowLoginPw(!showLoginPw)} isVisible={showLoginPw} />
                                 </div>
                             </div>
 
@@ -345,20 +363,20 @@ const AuthModal = ({ open, tab: initialTab = 'login', onClose }) => {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                                 <div>
                                     <label style={labelStyle}>Full Name</label>
-                                    <InputField icon={<IconUser />} type="text" placeholder="Your full name" value={regData.name} onChange={e => setRegData({ ...regData, name: e.target.value })} required />
+                                    <InputField icon={<IconUser />} type="text" placeholder="Enter your full name" value={regData.name} onChange={e => setRegData({ ...regData, name: e.target.value })} required />
                                 </div>
                                 <div>
                                     <label style={labelStyle}>Email Address</label>
-                                    <InputField icon={<IconMail />} type="email" placeholder="your@college.edu" value={regData.email} onChange={e => setRegData({ ...regData, email: e.target.value })} required />
+                                    <InputField icon={<IconMail />} type="email" placeholder="Enter your college email" value={regData.email} onChange={e => setRegData({ ...regData, email: e.target.value })} required />
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                                     <div>
                                         <label style={labelStyle}>Password</label>
-                                        <InputField icon={<IconLock />} type="password" placeholder="Min 6 chars" value={regData.password} onChange={e => setRegData({ ...regData, password: e.target.value })} required />
+                                        <InputField icon={<IconLock />} type={showRegPw ? 'text' : 'password'} placeholder="Min 6 characters" value={regData.password} onChange={e => setRegData({ ...regData, password: e.target.value })} required showToggle onToggle={() => setShowRegPw(!showRegPw)} isVisible={showRegPw} />
                                     </div>
                                     <div>
                                         <label style={labelStyle}>Confirm</label>
-                                        <InputField icon={<IconLock />} type="password" placeholder="Repeat" value={regData.confirmPassword} onChange={e => setRegData({ ...regData, confirmPassword: e.target.value })} required />
+                                        <InputField icon={<IconLock />} type={showRegConfirmPw ? 'text' : 'password'} placeholder="Repeat password" value={regData.confirmPassword} onChange={e => setRegData({ ...regData, confirmPassword: e.target.value })} required showToggle onToggle={() => setShowRegConfirmPw(!showRegConfirmPw)} isVisible={showRegConfirmPw} />
                                     </div>
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -367,7 +385,6 @@ const AuthModal = ({ open, tab: initialTab = 'login', onClose }) => {
                                         <SelectField name="role" value={regData.role} onChange={e => setRegData({ ...regData, role: e.target.value })}>
                                             <option value="student">Student</option>
                                             <option value="faculty">Faculty</option>
-                                            <option value="admin">Admin</option>
                                         </SelectField>
                                     </div>
                                     <div>
@@ -381,12 +398,12 @@ const AuthModal = ({ open, tab: initialTab = 'login', onClose }) => {
                                 {regData.role === 'student' && (
                                     <div>
                                         <label style={labelStyle}>Enrollment Number</label>
-                                        <InputField type="text" placeholder="e.g. 2024CSE001" value={regData.enrollment_no} onChange={e => setRegData({ ...regData, enrollment_no: e.target.value })} />
+                                        <InputField type="text" placeholder="Enter your enrollment number" value={regData.enrollment_no} onChange={e => setRegData({ ...regData, enrollment_no: e.target.value })} />
                                     </div>
                                 )}
                                 <div>
                                     <label style={labelStyle}>Phone</label>
-                                    <InputField type="tel" placeholder="e.g. 9876543210" value={regData.phone} onChange={e => setRegData({ ...regData, phone: e.target.value })} />
+                                    <InputField type="tel" placeholder="Enter your phone number" value={regData.phone} onChange={e => setRegData({ ...regData, phone: e.target.value })} />
                                 </div>
                             </div>
 
