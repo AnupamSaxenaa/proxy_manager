@@ -148,7 +148,7 @@ const verifyFace = async (req, res) => {
             if (score > bestScore) bestScore = score;
         }
 
-        const matchThreshold = 0.6;
+        const matchThreshold = 0.75; // Stricter threshold to avoid accepting any face
         const matched = bestScore >= matchThreshold;
 
         await pool.query(

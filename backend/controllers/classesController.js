@@ -208,7 +208,8 @@ const getTodaySessions = async (req, res) => {
               co.name as course_name, co.code as course_code,
               u.name as faculty_name,
               (SELECT COUNT(*) FROM student_classes WHERE class_id = c.id) as total_students,
-              (SELECT COUNT(*) FROM attendance_records ar WHERE ar.session_id = cs.id AND ar.status = 'present') as present_count
+              (SELECT COUNT(*) FROM attendance_records ar WHERE ar.session_id = cs.id AND ar.status = 'present') as present_count,
+              ${req.user.role === 'student' ? `(SELECT COUNT(*) FROM attendance_records ar WHERE ar.session_id = cs.id AND ar.student_id = ${Number(req.user.id)} AND ar.status = 'present')` : '0'} as student_present
        FROM class_sessions cs
        JOIN classes c ON cs.class_id = c.id
        JOIN courses co ON c.course_id = co.id
