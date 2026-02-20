@@ -63,16 +63,15 @@ const Login = () => {
     const { isDark, toggleTheme } = useTheme();
     const navigate = useNavigate();
 
-    const roleCreds = {
-        admin: { email: 'aadmin@gmail.com', password: 'admin123', label: 'Admin', icon: '🛡️' },
-        faculty: { email: 'rahul.makkar@iiitk.ac.in', password: 'faculty123', label: 'Faculty', icon: '👨‍🏫' },
-        student: { email: '', password: '', label: 'Student', icon: '🎓' },
+    const roleOptions = {
+        faculty: { label: 'Faculty', icon: '👨‍🏫' },
+        student: { label: 'Student', icon: '🎓' },
     };
 
     const selectRole = (role) => {
         setActiveRole(role);
-        setEmail(roleCreds[role].email);
-        setPassword(roleCreds[role].password);
+        setEmail('');
+        setPassword('');
         setError('');
     };
 
@@ -109,7 +108,7 @@ const Login = () => {
                     </div>
 
                     <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-                        {Object.entries(roleCreds).map(([role, cred]) => (
+                        {Object.entries(roleOptions).map(([role, opt]) => (
                             <button
                                 key={role}
                                 type="button"
@@ -132,8 +131,8 @@ const Login = () => {
                                     transition: 'all 0.2s',
                                 }}
                             >
-                                <span style={{ fontSize: 20 }}>{cred.icon}</span>
-                                {cred.label}
+                                <span style={{ fontSize: 20 }}>{opt.icon}</span>
+                                {opt.label}
                             </button>
                         ))}
                     </div>
