@@ -400,6 +400,7 @@ module.exports = {
     createCourse,
     createSession,
     getTodaySessions,
+    getHistoricalSessions,
     getSessionsByClass,
     deleteClass,
     clearClasses,
