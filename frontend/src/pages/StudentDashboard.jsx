@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
+import AIChatbot from '../components/AIChatbot';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, LineChart, Line,
@@ -327,6 +328,8 @@ const StudentDashboard = () => {
                     </div>
                 )}
             </div>
+
+            <AIChatbot />
         </>
     );
 };
