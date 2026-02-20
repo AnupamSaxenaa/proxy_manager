@@ -218,7 +218,7 @@ const FacultyDashboard = () => {
                             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block', animation: 'pulse 2s infinite' }} />
                             Ongoing Sessions ({ongoing.length})
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(320px, 100%), 1fr))', gap: 12 }}>
                             {ongoing.map(s => <SessionCard key={s.session_id} session={s} navigate={navigate} />)}
                         </div>
                     </div>
@@ -227,7 +227,7 @@ const FacultyDashboard = () => {
                 {upcoming.length > 0 && (
                     <div className="chart-card" style={{ marginBottom: 24 }}>
                         <div className="chart-title">Upcoming Sessions ({upcoming.length})</div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(320px, 100%), 1fr))', gap: 12 }}>
                             {upcoming.map(s => <SessionCard key={s.session_id} session={s} navigate={navigate} />)}
                         </div>
                     </div>
@@ -236,7 +236,7 @@ const FacultyDashboard = () => {
                 {completed.length > 0 && (
                     <div className="chart-card" style={{ marginBottom: 24 }}>
                         <div className="chart-title">Completed Sessions ({completed.length})</div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(320px, 100%), 1fr))', gap: 12 }}>
                             {completed.map(s => <SessionCard key={s.session_id} session={s} navigate={navigate} />)}
                         </div>
                     </div>

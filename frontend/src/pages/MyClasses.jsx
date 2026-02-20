@@ -98,7 +98,7 @@ const MyClasses = () => {
                             <h3 style={{ marginBottom: 12, color: 'var(--primary-400)', display: 'flex', alignItems: 'center', gap: 8 }}>
                                 <CalendarIcon /> {day}
                             </h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: 12 }}>
                                 {groupedByDay[day].map(c => (
                                     <div
                                         key={c.id}

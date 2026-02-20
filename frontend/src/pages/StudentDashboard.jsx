@@ -157,7 +157,7 @@ const StudentDashboard = () => {
                 {sessions.length > 0 && (
                     <div className="chart-card" style={{ marginBottom: 20 }}>
                         <div className="chart-title">Today's Classes</div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(300px, 100%), 1fr))', gap: 12 }}>
                             {[...sessions].sort((a, b) => {
                                 const order = { ongoing: 0, upcoming: 1, completed: 2 };
                                 return (order[a.computed_status] ?? 1) - (order[b.computed_status] ?? 1);

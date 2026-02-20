@@ -168,7 +168,7 @@ const ManageClasses = () => {
                         </div>
 
                         {showForm && (
-                            <form onSubmit={handleCreateClass} className="chart-card" style={{ marginBottom: 20, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, padding: 20 }}>
+                            <form onSubmit={handleCreateClass} className="chart-card" style={{ marginBottom: 20, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: 12, padding: 20 }}>
                                 <div className="input-group">
                                     <label>Course</label>
                                     <select className="input-field" value={classForm.course_id} onChange={e => setClassForm({ ...classForm, course_id: e.target.value })} required>
@@ -261,7 +261,7 @@ const ManageClasses = () => {
                         </div>
 
                         {showForm && (
-                            <form onSubmit={handleCreateCourse} className="chart-card" style={{ marginBottom: 20, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, padding: 20 }}>
+                            <form onSubmit={handleCreateCourse} className="chart-card" style={{ marginBottom: 20, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: 12, padding: 20 }}>
                                 <div className="input-group">
                                     <label>Course Name</label>
                                     <input type="text" className="input-field" value={courseForm.name} onChange={e => setCourseForm({ ...courseForm, name: e.target.value })} placeholder="Data Structures" required />

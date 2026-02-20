@@ -231,7 +231,7 @@ const LandingPage = () => {
                             A complete attendance ecosystem — from face recognition to analytics — with QR backup built in.
                         </p>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))', gap: 20 }}>
                         {FEATURES.map((f) => (
                             <div key={f.title} className="lp-glass" style={{ borderRadius: 16, padding: '32px 28px' }}>
                                 <div style={{ color: 'var(--text-primary)', marginBottom: 18, opacity: 0.85 }}>{f.icon}</div>
@@ -244,7 +244,7 @@ const LandingPage = () => {
             </section>
 
             <section style={{ padding: '100px 24px', background: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)' }}>
-                <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: 64, alignItems: 'center' }}>
+                <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(340px, 100%), 1fr))', gap: 64, alignItems: 'center' }}>
                     <div>
                         <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>How it works</div>
                         <h2 style={{ fontSize: 'clamp(24px, 3.5vw, 40px)', fontWeight: 900, letterSpacing: '-1px', marginBottom: 24 }}>Three roles, one system.</h2>
@@ -326,7 +326,7 @@ const LandingPage = () => {
 
             <footer style={{ background: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)', padding: '52px 24px 32px' }}>
                 <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 40, marginBottom: 48 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(180px, 100%), 1fr))', gap: 40, marginBottom: 48 }}>
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 800, fontSize: 18, marginBottom: 14, letterSpacing: '-0.4px' }}>
                                 <div style={{ width: 30, height: 30, background: 'var(--text-primary)', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--bg-primary)' }}>
