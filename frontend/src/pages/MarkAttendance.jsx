@@ -57,9 +57,7 @@ const MarkAttendance = () => {
     const startSession = async () => {
         if (!selectedClass) return;
         try {
-            const sessionRes = await api.post(`/classes/${selectedClass}/session`, {
-                session_date: new Date().toISOString().split('T')[0],
-            });
+            const sessionRes = await api.post(`/classes/${selectedClass}/session`, {});
             const sId = sessionRes.data.sessionId;
             setSessionId(sId);
 
