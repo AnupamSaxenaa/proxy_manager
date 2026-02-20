@@ -76,16 +76,21 @@ const ManageUsers = () => {
         return () => clearTimeout(timeoutId);
     }, [search, roleFilter, deptFilter, page]);
 
-    const handleDeactivate = async (id, currentStatus) => {
-        if (!confirm(`Are you sure you want to deactivate this user?`)) return;
+    const handleToggleStatus = async (id, currentStatus) => {
+        const action = currentStatus ? 'deactivate' : 'activate';
+        if (!confirm(`Are you sure you want to ${action} this user?`)) return;
 
-        // Note: The backend currently only has a DELETE /:id route which sets is_active = FALSE
         try {
-            await api.delete(`/users/${id}`);
-            toast.success('User deactivated successfully');
+            if (currentStatus) {
+                await api.delete(`/users/${id}`);
+                toast.success('User deactivated successfully');
+            } else {
+                await api.patch(`/users/${id}/activate`);
+                toast.success('User activated successfully');
+            }
             fetchUsers();
         } catch (error) {
-            toast.error('Failed to deactivate user');
+            toast.error(`Failed to ${action} user`);
         }
     };
 
@@ -218,17 +223,16 @@ const ManageUsers = () => {
                                             </td>
                                             <td>
                                                 <button
-                                                    onClick={() => handleDeactivate(u.id, u.is_active)}
+                                                    onClick={() => handleToggleStatus(u.id, u.is_active)}
                                                     className="btn btn-outline"
                                                     style={{
                                                         padding: '6px 12px',
                                                         fontSize: 12,
-                                                        color: u.is_active ? 'var(--text-primary)' : 'var(--text-muted)',
-                                                        borderColor: u.is_active ? 'var(--border-color)' : 'var(--border-light)'
+                                                        color: 'var(--text-primary)',
+                                                        borderColor: 'var(--border-color)'
                                                     }}
-                                                    disabled={!u.is_active}
                                                 >
-                                                    {u.is_active ? 'Deactivate' : 'Deactivated'}
+                                                    {u.is_active ? 'Deactivate' : 'Activate'}
                                                 </button>
                                             </td>
                                         </tr>

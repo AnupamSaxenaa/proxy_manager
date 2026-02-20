@@ -106,6 +106,16 @@ const deactivateUser = async (req, res) => {
     }
 };
 
+const activateUser = async (req, res) => {
+    try {
+        await pool.query('UPDATE users SET is_active = TRUE WHERE id = ?', [req.params.id]);
+        res.json({ message: 'User activated successfully.' });
+    } catch (error) {
+        console.error('Activate user error:', error);
+        res.status(500).json({ error: 'Failed to activate user.' });
+    }
+};
+
 const getAllDepartments = async (req, res) => {
     try {
         const [departments] = await pool.query('SELECT * FROM departments ORDER BY name');
@@ -116,4 +126,4 @@ const getAllDepartments = async (req, res) => {
     }
 };
 
-module.exports = { listUsers, getUserById, updateUser, deactivateUser, getAllDepartments };
+module.exports = { listUsers, getUserById, updateUser, deactivateUser, activateUser, getAllDepartments };
