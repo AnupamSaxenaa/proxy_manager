@@ -1421,3 +1421,21 @@ select.input-field {
 .react-hot-toast {
   font-family: 'Inter', sans-serif !important;
 }
+
+.calendar-mobile-view {
+  display: none;
+}
+
+.calendar-desktop-view {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .calendar-desktop-view {
+    display: none !important;
+  }
+
+  .calendar-mobile-view {
+    display: block;
+  }
+}

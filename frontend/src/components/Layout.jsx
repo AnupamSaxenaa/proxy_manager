@@ -225,7 +225,7 @@ const Layout = () => {
                     <div className="sidebar-logo"><IconLogo /></div>
                     <div>
                         <div className="sidebar-title">Classiq</div>
-                        <h1 className="page-title gradient-text">Manual Attendance</h1>
+                        <div className="sidebar-subtitle">Classiq Console</div>
                     </div>
                 </div>
 
