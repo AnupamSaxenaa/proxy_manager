@@ -199,7 +199,11 @@ const StudentDashboard = () => {
                                             <span style={{ gridColumn: '1 / -1' }}>{s.faculty_name}</span>
                                         </div>
 
-                                        {s.computed_status === 'ongoing' && (
+                                        {s.student_present > 0 ? (
+                                            <div style={{ fontSize: 13, fontWeight: 500 }}>
+                                                <span style={{ color: '#22c55e' }}>✓ Attendance Marked</span>
+                                            </div>
+                                        ) : s.computed_status === 'ongoing' && (
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
                                                 <Link to="/dashboard/face-attendance" className="btn btn-primary" style={{ fontSize: 13, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -218,16 +222,13 @@ const StudentDashboard = () => {
                                             </div>
                                         )}
 
-                                        {s.computed_status === 'completed' && (
+                                        {s.student_present === 0 && s.computed_status === 'completed' && (
                                             <div style={{ fontSize: 13, fontWeight: 500 }}>
-                                                {s.present_count > 0
-                                                    ? <span style={{ color: '#22c55e' }}>✓ Attendance Marked</span>
-                                                    : <span style={{ color: 'var(--text-muted)' }}>— Not Marked</span>
-                                                }
+                                                <span style={{ color: 'var(--text-muted)' }}>— Not Marked (Missed)</span>
                                             </div>
                                         )}
 
-                                        {s.computed_status === 'upcoming' && (
+                                        {s.student_present === 0 && s.computed_status === 'upcoming' && (
                                             <div style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic' }}>
                                                 Attendance will open when class begins
                                             </div>
