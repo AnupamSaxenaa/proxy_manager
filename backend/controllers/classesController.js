@@ -271,6 +271,17 @@ const getTodaySessions = async (req, res) => {
         res.json({ sessions: enriched });
     } catch (error) {
         console.error('Get today sessions error:', error);
+        res.status(500).json({ error: 'Failed to fetch today sessions.' });
+    }
+};
+
+const getHistoricalSessions = async (req, res) => {
+    try {
+        if (req.user.role !== 'faculty' && req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized to view historical sessions' });
+        }
+
+        const istNow = new Date(Date.now() + (5.5 * 60 * 60 * 1000));
         const today = istNow.toISOString().split('T')[0];
 
         let query = `
