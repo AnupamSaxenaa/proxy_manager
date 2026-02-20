@@ -33,7 +33,7 @@ const handleChat = async (req, res) => {
                 SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END) as present_classes,
                 SUM(CASE WHEN status = 'absent' THEN 1 ELSE 0 END) as absent_classes,
                 (SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0)) as attendance_percentage
-             FROM attendance 
+             FROM attendance_records 
              WHERE student_id = ?`,
             [studentId]
         );
