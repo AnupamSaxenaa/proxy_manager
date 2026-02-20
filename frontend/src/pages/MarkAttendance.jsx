@@ -275,12 +275,19 @@ const MarkAttendance = () => {
                                         <tr key={s.id} onClick={() => toggleAttendance(s.id)} style={{ cursor: 'pointer' }}>
                                             <td>{idx + 1}</td>
                                             <td>
-                                                <strong>{s.name}</strong>
-                                                {attendance[s.id]?.marked_by !== 'manual' && attendance[s.id]?.status === 'present' && (
-                                                    <span style={{ marginLeft: 8, fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'var(--text-primary)', color: 'var(--bg-primary)' }}>
-                                                        {attendance[s.id]?.marked_by}
-                                                    </span>
-                                                )}
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                    <strong>{s.name}</strong>
+                                                    {attendance[s.id]?.marked_by === 'qr' && attendance[s.id]?.status === 'present' && (
+                                                        <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 12, background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', fontWeight: 600, border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                                                            QR Scanned
+                                                        </span>
+                                                    )}
+                                                    {attendance[s.id]?.marked_by === 'facial' && attendance[s.id]?.status === 'present' && (
+                                                        <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 12, background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e', fontWeight: 600, border: '1px solid rgba(34, 197, 94, 0.2)' }}>
+                                                            Face ID
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td>{s.enrollment_no || '-'}</td>
                                             <td>
