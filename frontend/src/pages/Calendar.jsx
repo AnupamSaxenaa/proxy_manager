@@ -247,8 +247,8 @@ const Calendar = () => {
                 <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }}>
                     <div className="chart-card" style={{ width: '100%', maxWidth: 450, maxHeight: '90vh', overflowY: 'auto' }}>
                         <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h2 style={{ fontSize: 18, fontWeight: 700 }}>Events for {selectedDate}</h2>
-                            <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Events for {selectedDate}</h2>
+                            <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>
                                 <IconClose />
                             </button>
                         </div>
@@ -264,7 +264,7 @@ const Calendar = () => {
                                             return (
                                                 <div key={ev.id} style={{ padding: 12, border: '1px solid var(--border-color)', borderRadius: 8, background: 'var(--bg-card)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                                     <div>
-                                                        <div style={{ fontWeight: 700, fontSize: 15 }}>{ev.title}</div>
+                                                        <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text-primary)' }}>{ev.title}</div>
                                                         <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
                                                             {ev.start_time} - {ev.end_time}
@@ -283,7 +283,7 @@ const Calendar = () => {
                                         return (
                                             <div key={ev.id} style={{ padding: 12, border: '1px solid var(--border-color)', borderRadius: 8, background: 'var(--bg-input)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                                 <div>
-                                                    <div style={{ fontWeight: 600, fontSize: 14 }}>{ev.title}</div>
+                                                    <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text-primary)' }}>{ev.title}</div>
                                                     {ev.description && <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>{ev.description}</div>}
                                                     <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
                                                         <span className="badge">{ev.event_type}</span>
@@ -304,7 +304,7 @@ const Calendar = () => {
                             <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)', margin: '20px 0' }} />
 
                             {/* Create Event Form */}
-                            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 16 }}>Add New Event</h3>
+                            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 16, color: 'var(--text-primary)' }}>Add New Event</h3>
                             <form onSubmit={handleCreateSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                                 <div>
                                     <input className="input-field" type="text" placeholder="Event Title (e.g., Database Lab)" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required style={{ width: '100%' }} />
