@@ -50,35 +50,35 @@ const MyAttendance = () => {
             </div>
             <div className="page-content fade-in">
                 {records.length > 0 ? (
-                    <div className="data-table-wrapper">
-                        <table className="data-table">
+                    <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', margin: '0 -16px', padding: '0 16px' }}>
+                        <table className="data-table" style={{ minWidth: 600 }}>
                             <thead>
                                 <tr>
-                                    <th>Date</th>
+                                    <th style={{ whiteSpace: 'nowrap' }}>Date</th>
                                     <th>Course</th>
                                     <th>Topic</th>
                                     <th>Faculty</th>
-                                    <th>Status</th>
-                                    <th>Method</th>
+                                    <th style={{ textAlign: 'center' }}>Status</th>
+                                    <th style={{ textAlign: 'center' }}>Method</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {records.map((r) => (
                                     <tr key={r.id}>
-                                        <td>{new Date(r.session_date).toLocaleDateString('en-IN')}</td>
-                                        <td>
+                                        <td style={{ whiteSpace: 'nowrap' }}>{new Date(r.session_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                                        <td style={{ minWidth: 150 }}>
                                             <strong>{r.course_code}</strong>
                                             <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{r.course_name}</div>
                                         </td>
-                                        <td>{r.topic || '-'}</td>
-                                        <td>{r.faculty_name}</td>
-                                        <td>
-                                            <span className={`badge badge-${r.status}`}>
+                                        <td style={{ minWidth: 120 }}>{r.topic || '-'}</td>
+                                        <td style={{ whiteSpace: 'nowrap' }}>{r.faculty_name}</td>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <span className={`badge badge-${r.status}`} style={{ minWidth: 64, justifyContent: 'center' }}>
                                                 {r.status}
                                             </span>
                                         </td>
-                                        <td>
-                                            <span className="badge badge-faculty">{r.marked_by}</span>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <span className="badge badge-faculty" style={{ whiteSpace: 'nowrap' }}>{r.marked_by}</span>
                                         </td>
                                     </tr>
                                 ))}
