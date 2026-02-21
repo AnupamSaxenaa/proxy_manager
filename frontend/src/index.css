@@ -404,6 +404,8 @@ select.input-field {
   min-height: 100vh;
   position: relative;
   z-index: 1;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 .sidebar {
@@ -570,6 +572,8 @@ select.input-field {
 
 .main-content {
   flex: 1;
+  min-width: 0;
+  max-width: 100%;
   margin-left: var(--sidebar-width);
   min-height: 100vh;
   transition: background var(--transition-normal);
